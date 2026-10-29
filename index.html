@@ -105,7 +105,22 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
 .cart-head{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--blush-2)}
 .cart-head h2{margin:0;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600}
 .cart-close{background:none;border:none;font-size:30px;line-height:1;color:var(--wine);cursor:pointer;padding:4px 8px}
-.cart-items{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:14px}
+.cart-body{flex:1;overflow-y:auto;padding:16px 24px}
+.cart-items{display:flex;flex-direction:column;gap:14px}
+.cart-back{background:none;border:none;color:var(--rose);font:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:0;margin-bottom:6px}
+.checkout{display:flex;flex-direction:column;gap:16px}
+[hidden]{display:none !important}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field legend{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);padding:0}
+.field label small{font-weight:500;letter-spacing:0;text-transform:none;color:var(--wine-soft)}
+.field input,.field select,.field textarea{font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;color:var(--wine);width:100%}
+.field textarea{resize:vertical;min-height:80px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.field fieldset{border:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.choice{display:flex;gap:10px}
+.choice label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;font-size:15px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--wine);cursor:pointer}
+.choice label:has(input:checked){border-color:var(--rose);background:var(--blush-2)}
+.field-hint{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
 .cart-empty{margin:40px 0;text-align:center;color:var(--wine-soft);line-height:1.6}
 .cart-item{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:10px}
 .cart-item img{width:64px;height:76px;border-radius:12px;flex:none}
@@ -115,8 +130,6 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
 .qty button{width:28px;height:28px;border-radius:999px;border:1px solid var(--pink-2);background:var(--blush);color:var(--wine);font-size:16px;cursor:pointer;line-height:1}
 .cart-remove{background:none;border:none;color:var(--rose);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:0}
 .cart-foot{padding:20px 24px 28px;border-top:1px solid var(--blush-2);display:flex;flex-direction:column;gap:12px}
-.cart-foot label{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green)}
-.cart-foot select{font:inherit;padding:12px 14px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;color:var(--wine)}
 .cart-foot .btn{justify-content:center;border:none;cursor:pointer;font-family:inherit}
 .cart-foot .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .cart-note{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
@@ -280,20 +293,64 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
 <div class="cart-overlay" id="cartOverlay"></div>
 <aside class="cart" id="cart" aria-label="Cart" aria-hidden="true">
   <div class="cart-head">
-    <h2>Your cart</h2>
+    <h2 id="cartTitle">Your cart</h2>
     <button type="button" class="cart-close" id="cartClose" aria-label="Close cart">&times;</button>
   </div>
-  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-items" id="cartItems"></div>
+
+    <!-- Checkout form (step 2) -->
+    <form class="checkout" id="checkoutForm" hidden>
+      <button type="button" class="cart-back" id="cartBack">&larr; Back to cart</button>
+      <div class="field">
+        <label for="coName">Full name</label>
+        <input id="coName" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="coPhone">Mobile number</label>
+        <input id="coPhone" name="phone" type="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
+      </div>
+      <div class="field">
+        <label for="coBranch">Branch</label>
+        <select id="coBranch" name="branch" required>
+          <option value="">Choose a branch</option>
+          <option value="Cavite">Cavite</option>
+          <option value="Imus">Imus</option>
+          <option value="Boni-EDSA">Boni-EDSA</option>
+        </select>
+      </div>
+      <div class="field">
+        <fieldset>
+          <legend>Pick-up or delivery</legend>
+          <div class="choice">
+            <label><input type="radio" name="method" value="Pick-up" checked> Pick-up</label>
+            <label><input type="radio" name="method" value="Delivery"> Delivery</label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="field" id="addressField" hidden>
+        <label for="coAddress">Delivery address</label>
+        <textarea id="coAddress" name="address" autocomplete="street-address"></textarea>
+      </div>
+      <div class="field">
+        <label for="coDate">Date needed</label>
+        <input id="coDate" name="date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="coColor">Flower color you want</label>
+        <textarea id="coColor" name="color" placeholder="e.g. all red roses, pastel pink and white, yellow sunflowers with purple accents" required></textarea>
+        <p class="field-hint">We'll match your colors as closely as the season's fresh flowers allow.</p>
+      </div>
+      <div class="field">
+        <label for="coMessage">Message <small>(optional)</small></label>
+        <textarea id="coMessage" name="message" placeholder="Card message, recipient's name, or special requests"></textarea>
+      </div>
+    </form>
+  </div>
   <div class="cart-foot">
-    <label for="cartBranch">Send order to</label>
-    <select id="cartBranch">
-      <option value="">Choose a branch</option>
-      <option value="Cavite">Cavite</option>
-      <option value="Imus">Imus</option>
-      <option value="Boni-EDSA">Boni-EDSA</option>
-    </select>
-    <button type="button" class="btn btn-accent" id="cartSend" disabled>Send order on Facebook</button>
-    <p class="cart-note" id="cartNote">We'll copy your order list. Paste it in the chat with the branch to confirm details and price.</p>
+    <button type="button" class="btn btn-accent" id="cartCheckout" disabled>Checkout</button>
+    <button type="submit" form="checkoutForm" class="btn btn-accent" id="cartSend" hidden>Send order on Facebook</button>
+    <p class="cart-note" id="cartNote">Prices are confirmed by the branch in the Facebook chat.</p>
   </div>
 </aside>
 
@@ -366,7 +423,22 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
         </div>
       </div>`;
     }).join("") : '<p class="cart-empty">Your cart is empty.<br>Add an arrangement from the catalog.</p>';
-    $("cartSend").disabled = !names.length || !$("cartBranch").value;
+    $("cartCheckout").disabled = !names.length;
+    if (!names.length) showStep("cart");
+  }
+
+  // "cart" = review items, "checkout" = fill out the order form
+  function showStep(step) {
+    const checkout = step === "checkout";
+    $("cartTitle").textContent = checkout ? "Checkout" : "Your cart";
+    $("cartItems").hidden = checkout;
+    $("checkoutForm").hidden = !checkout;
+    $("cartCheckout").hidden = checkout;
+    $("cartSend").hidden = !checkout;
+    $("cartNote").textContent = checkout
+      ? "We'll copy your order. Paste it in the branch's Facebook chat to confirm the price."
+      : "Prices are confirmed by the branch in the Facebook chat.";
+    $("cartBody").scrollTop = 0;
   }
 
   function openCart(open) {
@@ -374,6 +446,7 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
     $("cartOverlay").classList.toggle("open", open);
     $("cart").setAttribute("aria-hidden", !open);
     document.body.style.overflow = open ? "hidden" : "";
+    if (open) showStep("cart");
   }
 
   grid.addEventListener("click", e => {
@@ -399,12 +472,39 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
   $("cartClose").addEventListener("click", () => openCart(false));
   $("cartOverlay").addEventListener("click", () => openCart(false));
   document.addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
-  $("cartBranch").addEventListener("change", renderCart);
+  $("cartCheckout").addEventListener("click", () => showStep("checkout"));
+  $("cartBack").addEventListener("click", () => showStep("cart"));
 
-  $("cartSend").addEventListener("click", async () => {
-    const branch = $("cartBranch").value;
-    const lines = Object.keys(cart).map(n => `- ${n} x${cart[n]}`);
-    const text = `Hi Gayle's Flower Shop (${branch})! I'd like to order:\n${lines.join("\n")}`;
+  // Show the address box only for delivery
+  const form = $("checkoutForm");
+  form.addEventListener("change", e => {
+    if (e.target.name !== "method") return;
+    const delivery = e.target.value === "Delivery";
+    $("addressField").hidden = !delivery;
+    $("coAddress").required = delivery;
+  });
+
+  // Earliest date is today
+  const now = new Date();
+  $("coDate").min = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(form));
+    const branch = f.branch;
+    const date = new Date(f.date + "T00:00").toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" });
+    const lines = [
+      `Hi Gayle's Flower Shop (${branch})! I'd like to order:`,
+      ...Object.keys(cart).map(n => `- ${n} x${cart[n]}`),
+      "",
+      `Name: ${f.name}`,
+      `Mobile: ${f.phone}`,
+      f.method === "Delivery" ? `Delivery to: ${f.address}` : `Pick-up at ${branch} branch`,
+      `Date needed: ${date}`,
+      `Flower color: ${f.color}`
+    ];
+    if (f.message.trim()) lines.push(`Message: ${f.message}`);
+    const text = lines.join("\n");
     try {
       await navigator.clipboard.writeText(text);
       $("cartNote").textContent = "Order copied! Paste it in the Facebook chat to confirm.";
