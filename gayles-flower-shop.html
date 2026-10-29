@@ -92,6 +92,34 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
 .branch h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
 .branch p{margin:0;font-size:15px;line-height:1.6;color:var(--wine-soft)}
 .branch .btn{align-self:flex-start}
+
+/* cart */
+.cart-btn{position:relative;display:inline-flex;align-items:center;gap:8px;background:none;border:1.5px solid var(--accent);border-radius:999px;color:#FBE7EC;padding:10px 18px;font:inherit;font-weight:500;cursor:pointer}
+.cart-btn:hover{background:rgba(242,167,186,.15)}
+.cart-count{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--wine);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.btn-add{border:none;cursor:pointer;font-family:inherit}
+.cart-overlay{position:fixed;inset:0;background:rgba(74,21,48,.45);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:50}
+.cart-overlay.open{opacity:1;pointer-events:auto}
+.cart{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--blush);color:var(--wine);transform:translateX(100%);transition:transform .3s ease;z-index:51;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(74,21,48,.2)}
+.cart.open{transform:none}
+.cart-head{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--blush-2)}
+.cart-head h2{margin:0;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600}
+.cart-close{background:none;border:none;font-size:30px;line-height:1;color:var(--wine);cursor:pointer;padding:4px 8px}
+.cart-items{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:14px}
+.cart-empty{margin:40px 0;text-align:center;color:var(--wine-soft);line-height:1.6}
+.cart-item{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:10px}
+.cart-item img{width:64px;height:76px;border-radius:12px;flex:none}
+.cart-item .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cart-item strong{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1}
+.qty{display:inline-flex;align-items:center;gap:10px}
+.qty button{width:28px;height:28px;border-radius:999px;border:1px solid var(--pink-2);background:var(--blush);color:var(--wine);font-size:16px;cursor:pointer;line-height:1}
+.cart-remove{background:none;border:none;color:var(--rose);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:0}
+.cart-foot{padding:20px 24px 28px;border-top:1px solid var(--blush-2);display:flex;flex-direction:column;gap:12px}
+.cart-foot label{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green)}
+.cart-foot select{font:inherit;padding:12px 14px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;color:var(--wine)}
+.cart-foot .btn{justify-content:center;border:none;cursor:pointer;font-family:inherit}
+.cart-foot .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.cart-note{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
 </style>
 </head>
 <body>
@@ -107,6 +135,10 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
       <a href="#shop">Shop</a>
       <a href="#occasions">Occasions</a>
       <a href="#order">How to order</a>
+      <button type="button" class="cart-btn" id="cartOpen" aria-label="Open cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        Cart <span class="cart-count" id="cartCount">0</span>
+      </button>
       <a href="#branches" class="btn btn-accent">Order now</a>
     </div>
   </nav>
@@ -244,11 +276,33 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
   </div>
 </footer>
 
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart" id="cart" aria-label="Cart" aria-hidden="true">
+  <div class="cart-head">
+    <h2>Your cart</h2>
+    <button type="button" class="cart-close" id="cartClose" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <label for="cartBranch">Send order to</label>
+    <select id="cartBranch">
+      <option value="">Choose a branch</option>
+      <option value="Cavite">Cavite</option>
+      <option value="Imus">Imus</option>
+      <option value="Boni-EDSA">Boni-EDSA</option>
+    </select>
+    <button type="button" class="btn btn-accent" id="cartSend" disabled>Send order on Facebook</button>
+    <p class="cart-note" id="cartNote">We'll copy your order list. Paste it in the chat with the branch to confirm details and price.</p>
+  </div>
+</aside>
+
 <script>
   // ===== EDIT YOUR PRODUCTS HERE =====
   // image: path or URL to the photo (leave "" to show a placeholder)
   const PRODUCTS = [
-    { cat: "Bouquet",  name: "Pink Blush Bouquet",         price: "Message for price", image: "images/pink-blush-bouquet.jpg" },
+    { cat: "Gift set", name: "Sunflower Love Bear",        price: "Message for price", image: "images/sunflower-teddy-bear.jpg" },
+    { cat: "Bouquet",  name: "Pink Blush Bouquet",        price: "Message for price", image: "images/pink-blush-bouquet.jpg" },
     { cat: "Bouquet",  name: "Classic Red Roses",          price: "Message for price", image: "images/classic-red-roses.jpg" },
     { cat: "Bouquet",  name: "Red & Blush Roses",          price: "Message for price", image: "images/red-and-blush-roses.jpg" },
     { cat: "Bouquet",  name: "Orchid Luxe Bouquet",        price: "Message for price", image: "images/orchid-luxe-bouquet.jpg" },
@@ -274,11 +328,94 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
         <h3>${p.name}</h3>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
           <span class="price">${p.price}</span>
-          <a href="#branches" class="btn btn-dark" style="font-size:14px;padding:12px 18px">Order</a>
+          <button type="button" class="btn btn-dark btn-add" data-i="${i}" style="font-size:14px;padding:12px 18px">Add to cart</button>
         </div>
       </div>`;
     grid.appendChild(card);
   });
+
+  // ===== CART =====
+  const BRANCH_LINKS = {
+    "Cavite": "https://www.facebook.com/groups/351630443651243/user/100063697824285/",
+    "Imus": "https://www.facebook.com/groups/351630443651243/user/100078109568096/",
+    "Boni-EDSA": "https://www.facebook.com/groups/351630443651243/user/61555185975524/"
+  };
+  const $ = id => document.getElementById(id);
+  let cart = {}; // product name -> quantity
+  try { cart = JSON.parse(localStorage.getItem("gayles-cart")) || {}; } catch (e) {}
+
+  function saveCart() {
+    try { localStorage.setItem("gayles-cart", JSON.stringify(cart)); } catch (e) {}
+  }
+
+  function renderCart() {
+    const names = Object.keys(cart).filter(n => PRODUCTS.some(p => p.name === n));
+    $("cartCount").textContent = names.reduce((sum, n) => sum + cart[n], 0);
+    $("cartItems").innerHTML = names.length ? names.map(n => {
+      const p = PRODUCTS.find(p => p.name === n);
+      return `<div class="cart-item">
+        <img src="${p.image}" alt="">
+        <div class="info">
+          <strong>${p.name}</strong>
+          <div class="qty">
+            <button type="button" data-dec="${n}" aria-label="Fewer">&minus;</button>
+            <span>${cart[n]}</span>
+            <button type="button" data-inc="${n}" aria-label="More">+</button>
+          </div>
+          <button type="button" class="cart-remove" data-rm="${n}">Remove</button>
+        </div>
+      </div>`;
+    }).join("") : '<p class="cart-empty">Your cart is empty.<br>Add an arrangement from the catalog.</p>';
+    $("cartSend").disabled = !names.length || !$("cartBranch").value;
+  }
+
+  function openCart(open) {
+    $("cart").classList.toggle("open", open);
+    $("cartOverlay").classList.toggle("open", open);
+    $("cart").setAttribute("aria-hidden", !open);
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+
+  grid.addEventListener("click", e => {
+    const btn = e.target.closest(".btn-add");
+    if (!btn) return;
+    const name = PRODUCTS[btn.dataset.i].name;
+    cart[name] = (cart[name] || 0) + 1;
+    saveCart(); renderCart();
+    btn.textContent = "Added ✓";
+    setTimeout(() => { btn.textContent = "Add to cart"; }, 1200);
+  });
+
+  $("cartItems").addEventListener("click", e => {
+    const d = e.target.dataset;
+    if (d.inc) cart[d.inc]++;
+    else if (d.dec) { if (--cart[d.dec] < 1) delete cart[d.dec]; }
+    else if (d.rm) delete cart[d.rm];
+    else return;
+    saveCart(); renderCart();
+  });
+
+  $("cartOpen").addEventListener("click", () => openCart(true));
+  $("cartClose").addEventListener("click", () => openCart(false));
+  $("cartOverlay").addEventListener("click", () => openCart(false));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
+  $("cartBranch").addEventListener("change", renderCart);
+
+  $("cartSend").addEventListener("click", async () => {
+    const branch = $("cartBranch").value;
+    const lines = Object.keys(cart).map(n => `- ${n} x${cart[n]}`);
+    const text = `Hi Gayle's Flower Shop (${branch})! I'd like to order:\n${lines.join("\n")}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      $("cartNote").textContent = "Order copied! Paste it in the Facebook chat to confirm.";
+    } catch (e) {
+      $("cartNote").textContent = "Copy this into the Facebook chat: " + text.replace(/\n/g, " ");
+    }
+    const win = window.open(BRANCH_LINKS[branch], "_blank");
+    if (win) win.opener = null;
+  });
+
+  renderCart();
 </script>
 </body>
 </html>
