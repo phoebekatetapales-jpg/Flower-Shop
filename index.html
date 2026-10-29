@@ -413,10 +413,16 @@ header{background:var(--wine);color:#FBE7EC}
   });
 
   // ===== CART =====
+  // TESTING: every branch sends to the test profile.
+  // Real links to restore after testing:
+  //   Cavite:    https://www.facebook.com/groups/351630443651243/user/100063697824285/
+  //   Imus:      https://www.facebook.com/groups/351630443651243/user/100078109568096/
+  //   Boni-EDSA: https://www.facebook.com/groups/351630443651243/user/61555185975524/
+  const TEST_LINK = "https://www.facebook.com/phoebekate.tapales";
   const BRANCH_LINKS = {
-    "Cavite": "https://www.facebook.com/groups/351630443651243/user/100063697824285/",
-    "Imus": "https://www.facebook.com/groups/351630443651243/user/100078109568096/",
-    "Boni-EDSA": "https://www.facebook.com/groups/351630443651243/user/61555185975524/"
+    "Cavite": TEST_LINK,
+    "Imus": TEST_LINK,
+    "Boni-EDSA": TEST_LINK
   };
   const $ = id => document.getElementById(id);
   let cart = {}; // product name -> quantity
