@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gayle's Flower Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wine:#4A1530; --wine-soft:#6A3A50; --rose:#8C2F55;
+  --accent:#F2A7BA; --blush:#FBF1F3; --blush-2:#F6DCE3;
+  --pink-1:#F6C9D4; --pink-2:#E9B4C3; --peach:#F3DCC8; --mint:#DCE8DF;
+  --green:#2F5D46; --green-line:#5E8A73; --cream:#FFF5F7;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--blush);color:var(--wine);font-family:Manrope,system-ui,sans-serif}
+a{color:var(--wine)}a:hover{color:var(--rose)}
+img{display:block;width:100%;height:100%;object-fit:cover}
+.serif{font-family:'Cormorant Garamond',serif}
+.wrap{max-width:1280px;margin:0 auto;padding-left:32px;padding-right:32px}
+.eyebrow{margin:0;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green)}
+.h2{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(40px,5vw,64px);line-height:1.02}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;border-radius:999px;transition:transform .2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn-accent{background:var(--accent);color:var(--wine);padding:16px 30px;font-size:16px}
+.btn-accent:hover{color:var(--wine)}
+.btn-outline{border:1.5px solid var(--accent);color:var(--cream);padding:16px 30px;font-size:16px}
+.btn-outline:hover{color:var(--cream)}
+.btn-dark{background:var(--wine);color:var(--cream);padding:14px 22px;font-size:15px}
+.btn-dark:hover{color:var(--cream)}
+.photo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;color:#6A2040;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-align:center}
+
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(8deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.float{animation:float 6s ease-in-out infinite}
+.float-slow{animation:float 9s ease-in-out infinite}
+.rise{animation:rise .9s ease-out both}
+.rise-2{animation:rise .9s .2s ease-out both}
+.rise-3{animation:rise .9s .4s ease-out both}
+.track{animation:marquee 28s linear infinite}
+.card{transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(74,21,48,.16)}
+@media (prefers-reduced-motion:reduce){.float,.float-slow,.rise,.rise-2,.rise-3,.track{animation:none}}
+
+/* header + hero */
+header{background:var(--wine);color:#FBE7EC}
+nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#FBE7EC}
+.logo:hover{color:#FBE7EC}
+.logo span{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:.5px}
+.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:28px;font-size:15px;font-weight:500}
+.nav-links a{color:#FBE7EC;text-decoration:none}
+.nav-links .btn-accent{padding:12px 22px;font-size:15px;color:var(--wine)}
+.hero{padding-top:64px;padding-bottom:112px;display:flex;flex-wrap:wrap;align-items:center;gap:56px;position:relative}
+.hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:28px}
+.hero h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(52px,7vw,96px);line-height:.98;color:var(--cream)}
+.hero h1 em{color:var(--accent)}
+.hero-art{flex:1 1 480px;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:end}
+.arch-up{height:440px;border-radius:999px 999px 28px 28px;background:var(--pink-1)}
+.arch-down{height:250px;border-radius:28px 28px 999px 999px;background:var(--pink-2)}
+
+/* marquee */
+.marquee{background:var(--accent);color:var(--wine);padding:18px 0;overflow:hidden;white-space:nowrap}
+.marquee .track{display:inline-flex;gap:48px;font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;font-weight:600}
+
+/* products */
+.grid-products{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
+.product{background:#fff;border-radius:28px;padding:14px;display:flex;flex-direction:column;gap:16px}
+.product .photo{aspect-ratio:4/5;border-radius:20px;position:relative}
+.tag{position:absolute;top:14px;left:14px;background:#fff;color:var(--wine);font-size:11px;letter-spacing:1px;padding:7px 12px;border-radius:999px;z-index:1}
+.product h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1.1}
+.price{font-size:17px;font-weight:700;color:var(--green)}
+
+/* occasions */
+.occasion{border:1px solid var(--green-line);border-radius:28px;padding:32px 28px;display:flex;flex-direction:column;gap:14px}
+.occasion .num{font-family:'Cormorant Garamond',serif;font-size:52px;font-style:italic;color:var(--accent);line-height:1}
+.occasion h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600}
+.occasion p{margin:0;font-size:15px;line-height:1.65;color:#D9E4DC}
+
+/* steps */
+.steps{flex:1 1 520px;min-width:0;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:18px}
+.steps li{background:#fff;border-radius:24px;padding:26px 28px;display:flex;gap:22px;align-items:center}
+.steps .n{flex:none;width:56px;height:56px;border-radius:999px;background:var(--pink-1);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600}
+.steps strong{font-size:18px}
+.steps span.t{font-size:15px;line-height:1.55;color:var(--wine-soft)}
+
+/* branches */
+.branch{background:#fff;border-radius:32px;padding:36px 32px;display:flex;flex-direction:column;gap:16px}
+.branch h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
+.branch p{margin:0;font-size:15px;line-height:1.6;color:var(--wine-soft)}
+.branch .btn{align-self:flex-start}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER + HERO ===== -->
+<header>
+  <nav class="wrap" aria-label="Main">
+    <a href="#top" class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#F2A7BA" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="18" r="4"/><path d="M18 14c-3-6 3-10 0-12M18 14c3-6-3-10 0-12"/><path d="M14 18c-6-3-10 3-12 0M14 18c-6 3-10-3-12 0"/><path d="M22 18c6-3 10 3 12 0M22 18c6 3 10-3 12 0"/><path d="M18 22c-3 6 3 10 0 12M18 22c3 6-3 10 0 12"/></svg>
+      <span>Gayle's Flower Shop</span>
+    </a>
+    <div class="nav-links">
+      <a href="#shop">Shop</a>
+      <a href="#occasions">Occasions</a>
+      <a href="#order">How to order</a>
+      <a href="#branches" class="btn btn-accent">Order now</a>
+    </div>
+  </nav>
+
+  <section id="top" class="wrap hero">
+    <svg class="float" style="position:absolute;top:24px;left:46%;opacity:.55" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#F2A7BA" stroke-width="1.5" aria-hidden="true"><path d="M32 6c10 12 10 40 0 52C22 46 22 18 32 6z"/><path d="M32 14v40"/></svg>
+    <svg class="float-slow" style="position:absolute;bottom:40px;left:4%;opacity:.45" width="90" height="90" viewBox="0 0 64 64" fill="none" stroke="#F2A7BA" stroke-width="1.2" aria-hidden="true"><circle cx="32" cy="32" r="6"/><path d="M32 26c-6-10 6-18 0-22M32 26c6-10-6-18 0-22M26 32c-10-6-18 6-22 0M26 32c-10 6-18-6-22 0M38 32c10-6 18 6 22 0M38 32c10 6 18-6 22 0M32 38c-6 10 6 18 0 22M32 38c6 10-6 18 0 22"/></svg>
+
+    <div class="hero-copy rise">
+      <p style="margin:0;font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent)">Cavite · Imus · Boni-EDSA</p>
+      <h1>Say it with <em>flowers</em>, beautifully arranged.</h1>
+      <p style="margin:0;max-width:520px;font-size:18px;line-height:1.65;color:#F3D6DE">Fresh bouquets, flower boxes and arrangements for every moment that matters — handcrafted by Gayle's Flower Shop and ready to brighten someone's day.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:8px">
+        <a href="#shop" class="btn btn-accent">Browse the catalog</a>
+        <a href="#branches" class="btn btn-outline">Find a branch</a>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <!-- Replace the placeholder with: <img src="images/hero.jpg" alt="Bouquet"> -->
+      <div class="photo arch-up rise-2">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        [Hero bouquet photo]
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="photo arch-down rise-3">[Flower box photo]</div>
+        <div class="rise-3" style="background:var(--blush);color:var(--wine);border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:6px">
+          <span class="serif" style="font-size:34px;font-weight:600;line-height:1">3 branches</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--wine-soft)">Order from the shop nearest you</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</header>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>Birthdays ✿</span><span>Anniversaries ✿</span><span>Valentine's ✿</span><span>Graduations ✿</span><span>Mother's Day ✿</span><span>Sympathy ✿</span><span>Just because ✿</span>
+    <span>Birthdays ✿</span><span>Anniversaries ✿</span><span>Valentine's ✿</span><span>Graduations ✿</span><span>Mother's Day ✿</span><span>Sympathy ✿</span><span>Just because ✿</span>
+  </div>
+</div>
+
+<!-- ===== SHOP / CATALOG ===== -->
+<section id="shop" class="wrap" style="padding-top:112px;padding-bottom:96px;display:flex;flex-direction:column;gap:48px">
+  <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:24px">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:640px">
+      <p class="eyebrow">Our catalog</p>
+      <h2 class="h2">Blooms made to be remembered</h2>
+    </div>
+    <p style="margin:0;max-width:400px;font-size:16px;line-height:1.65;color:var(--wine-soft)">Tap any arrangement and message your nearest branch to reserve it. Designs may vary slightly with the season's freshest flowers.</p>
+  </div>
+
+  <!-- Product cards are generated from the PRODUCTS list in the script at the bottom -->
+  <div class="grid-products" id="products"></div>
+</section>
+
+<!-- ===== OCCASIONS ===== -->
+<section id="occasions" style="background:var(--green);color:#F4EFE6">
+  <div class="wrap" style="padding-top:104px;padding-bottom:104px;display:flex;flex-direction:column;gap:48px">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:680px">
+      <p class="eyebrow" style="color:var(--accent)">For every occasion</p>
+      <h2 class="h2">Whatever you need to say, we'll help you say it.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
+      <div class="occasion"><span class="num">01</span><h3>Celebrations</h3><p>Birthdays, graduations and milestones deserve something bright and joyful.</p></div>
+      <div class="occasion"><span class="num">02</span><h3>Romance</h3><p>Roses and lush bouquets for anniversaries, Valentine's and sweet surprises.</p></div>
+      <div class="occasion"><span class="num">03</span><h3>Sympathy</h3><p>Gentle, respectful arrangements to share comfort when words fall short.</p></div>
+      <div class="occasion"><span class="num">04</span><h3>Just because</h3><p>No reason needed. A little bloom to make an ordinary day feel special.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW TO ORDER ===== -->
+<section id="order" class="wrap" style="padding-top:112px;padding-bottom:112px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+  <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:18px">
+    <p class="eyebrow">How to order</p>
+    <h2 class="h2">Three easy steps to a happy face</h2>
+    <p style="margin:0;font-size:16px;line-height:1.65;color:var(--wine-soft);max-width:440px">Ordering is simple and personal — chat directly with our florists on Facebook.</p>
+  </div>
+  <ol class="steps">
+    <li><span class="n">1</span><div style="display:flex;flex-direction:column;gap:4px"><strong>Pick your favorite</strong><span class="t">Browse the catalog and choose the arrangement you love.</span></div></li>
+    <li><span class="n">2</span><div style="display:flex;flex-direction:column;gap:4px"><strong>Message your nearest branch</strong><span class="t">Send the photo or name of the design to Cavite, Imus or Boni-EDSA on Facebook.</span></div></li>
+    <li><span class="n">3</span><div style="display:flex;flex-direction:column;gap:4px"><strong>Confirm and receive</strong><span class="t">Settle the details, date and pick-up or delivery with the branch.</span></div></li>
+  </ol>
+</section>
+
+<!-- ===== BRANCHES ===== -->
+<section id="branches" style="background:var(--blush-2)">
+  <div class="wrap" style="padding-top:104px;padding-bottom:104px;display:flex;flex-direction:column;gap:48px">
+    <div style="display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
+      <p class="eyebrow">Visit or message us</p>
+      <h2 class="h2">Our branches</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+      <div class="branch card">
+        <span style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--rose)">Branch</span>
+        <h3>Cavite</h3>
+        <p>[Branch address]<br>[Opening hours]</p>
+        <a class="btn btn-dark" href="https://www.facebook.com/groups/351630443651243/user/100063697824285/" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+          Message on Facebook</a>
+      </div>
+      <div class="branch card">
+        <span style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--rose)">Branch</span>
+        <h3>Imus</h3>
+        <p>[Branch address]<br>[Opening hours]</p>
+        <a class="btn btn-dark" href="https://www.facebook.com/groups/351630443651243/user/100078109568096/" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+          Message on Facebook</a>
+      </div>
+      <div class="branch card">
+        <span style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--rose)">Branch</span>
+        <h3>Boni-EDSA</h3>
+        <p>[Branch address]<br>[Opening hours]</p>
+        <a class="btn btn-dark" href="https://www.facebook.com/groups/351630443651243/user/61555185975524/" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+          Message on Facebook</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:var(--wine);color:#F3D6DE">
+  <div class="wrap" style="padding-top:72px;padding-bottom:40px;display:flex;flex-direction:column;gap:40px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px">
+      <p class="serif" style="margin:0;font-size:clamp(36px,5vw,60px);font-weight:500;line-height:1.05;color:var(--cream);max-width:720px">Let's make <em style="color:var(--accent)">someone's day</em> bloom.</p>
+      <a href="#branches" class="btn btn-accent">Order now</a>
+    </div>
+    <div style="border-top:1px solid #6E3550;padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;font-size:14px">
+      <span>© 2026 Gayle's Flower Shop · Cavite · Imus · Boni-EDSA</span>
+      <span>Fresh flowers, handcrafted with love.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ===== EDIT YOUR PRODUCTS HERE =====
+  // image: path or URL to the photo (leave "" to show a placeholder)
+  const PRODUCTS = [
+    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Flower box", name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Basket",     name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Flower box", name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Sympathy",   name: "[Product name]", price: "[Price]", image: "" },
+    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" }
+  ];
+  const TONES = ["#F6C9D4", "#F3DCC8", "#E9B4C3", "#DCE8DF"];
+  const ICON = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+  const grid = document.getElementById("products");
+  PRODUCTS.forEach((p, i) => {
+    const card = document.createElement("article");
+    card.className = "product card";
+    const media = p.image
+      ? `<img src="${p.image}" alt="${p.name}">`
+      : `${ICON}[Catalog photo]`;
+    card.innerHTML = `
+      <div class="photo" style="background:${TONES[i % TONES.length]}">
+        <span class="tag">${p.cat}</span>${media}
+      </div>
+      <div style="padding:0 8px 8px;display:flex;flex-direction:column;gap:10px">
+        <h3>${p.name}</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span class="price">${p.price}</span>
+          <a href="#branches" class="btn btn-dark" style="font-size:14px;padding:12px 18px">Order</a>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
