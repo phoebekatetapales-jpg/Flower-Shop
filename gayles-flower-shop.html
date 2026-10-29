@@ -248,14 +248,13 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
   // ===== EDIT YOUR PRODUCTS HERE =====
   // image: path or URL to the photo (leave "" to show a placeholder)
   const PRODUCTS = [
-    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Flower box", name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Basket",     name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Flower box", name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Sympathy",   name: "[Product name]", price: "[Price]", image: "" },
-    { cat: "Bouquet",    name: "[Product name]", price: "[Price]", image: "" }
+    { cat: "Bouquet",  name: "Pink Blush Bouquet",         price: "Message for price", image: "images/pink-blush-bouquet.jpg" },
+    { cat: "Bouquet",  name: "Classic Red Roses",          price: "Message for price", image: "images/classic-red-roses.jpg" },
+    { cat: "Bouquet",  name: "Red & Blush Roses",          price: "Message for price", image: "images/red-and-blush-roses.jpg" },
+    { cat: "Bouquet",  name: "Orchid Luxe Bouquet",        price: "Message for price", image: "images/orchid-luxe-bouquet.jpg" },
+    { cat: "Standee",  name: "Grand Celebration Standee",  price: "Message for price", image: "images/grand-celebration-standee.jpg" },
+    { cat: "Sympathy", name: "White Daisy Wreath",         price: "Message for price", image: "images/white-daisy-wreath.jpg" },
+    { cat: "Sympathy", name: "Orchid & Anthurium Tribute", price: "Message for price", image: "images/orchid-and-anthurium-tribute.jpg" }
   ];
   const TONES = ["#F6C9D4", "#F3DCC8", "#E9B4C3", "#DCE8DF"];
   const ICON = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
@@ -265,7 +264,7 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
     const card = document.createElement("article");
     card.className = "product card";
     const media = p.image
-      ? `<img src="${p.image}" alt="${p.name}">`
+      ? `<img src="${p.image}" alt="${p.name}" loading="lazy">`
       : `${ICON}[Catalog photo]`;
     card.innerHTML = `
       <div class="photo" style="background:${TONES[i % TONES.length]}">
