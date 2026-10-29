@@ -43,16 +43,33 @@ img{display:block;width:100%;height:100%;object-fit:cover}
 .track{animation:marquee 28s linear infinite}
 .card{transition:transform .3s ease,box-shadow .3s ease}
 .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(74,21,48,.16)}
-@media (prefers-reduced-motion:reduce){.float,.float-slow,.rise,.rise-2,.rise-3,.track{animation:none}}
+@media (prefers-reduced-motion:reduce){.float,.float-slow,.rise,.rise-2,.rise-3,.track,.topbar,.cart-count.bump{animation:none}}
+
+/* sticky navigation */
+html{scroll-padding-top:96px}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+@keyframes bump{0%,100%{transform:scale(1)}40%{transform:scale(1.45)}70%{transform:scale(.9)}}
+.topbar{position:sticky;top:0;z-index:40;background:var(--wine);color:#FBE7EC;animation:slideDown .7s ease-out both;transition:background-color .35s ease,box-shadow .35s ease}
+.topbar.scrolled{background:rgba(74,21,48,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(74,21,48,.25)}
+nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;transition:padding .35s ease}
+.topbar.scrolled nav{padding-top:10px;padding-bottom:10px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#FBE7EC}
+.logo:hover{color:#FBE7EC}
+.logo svg{transition:transform .6s ease}
+.logo:hover svg{transform:rotate(45deg)}
+.topbar.scrolled .logo svg{transform:rotate(90deg) scale(.85)}
+.logo span{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:.5px;transition:font-size .35s ease}
+.topbar.scrolled .logo span{font-size:24px}
+.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:28px;font-size:15px;font-weight:500}
+.nav-links a{color:#FBE7EC;text-decoration:none}
+.nav-links a:not(.btn){position:relative;padding:4px 0}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.nav-links a:not(.btn):hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-links a.active{color:var(--accent)}
+.cart-count.bump{animation:bump .45s ease}
 
 /* header + hero */
 header{background:var(--wine);color:#FBE7EC}
-nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
-.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#FBE7EC}
-.logo:hover{color:#FBE7EC}
-.logo span{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:.5px}
-.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:28px;font-size:15px;font-weight:500}
-.nav-links a{color:#FBE7EC;text-decoration:none}
 .nav-links .btn-accent{padding:12px 22px;font-size:15px;color:var(--wine)}
 .hero{padding-top:64px;padding-bottom:112px;display:flex;flex-wrap:wrap;align-items:center;gap:56px;position:relative}
 .hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:28px}
@@ -137,8 +154,8 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
 </head>
 <body>
 
-<!-- ===== HEADER + HERO ===== -->
-<header>
+<!-- ===== STICKY NAVIGATION ===== -->
+<div class="topbar" id="topbar">
   <nav class="wrap" aria-label="Main">
     <a href="#top" class="logo">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#F2A7BA" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="18" r="4"/><path d="M18 14c-3-6 3-10 0-12M18 14c3-6-3-10 0-12"/><path d="M14 18c-6-3-10 3-12 0M14 18c-6 3-10-3-12 0"/><path d="M22 18c6-3 10 3 12 0M22 18c6 3 10-3 12 0"/><path d="M18 22c-3 6 3 10 0 12M18 22c3 6-3 10 0 12"/></svg>
@@ -155,7 +172,10 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
       <a href="#branches" class="btn btn-accent">Order now</a>
     </div>
   </nav>
+</div>
 
+<!-- ===== HEADER + HERO ===== -->
+<header>
   <section id="top" class="wrap hero">
     <svg class="float" style="position:absolute;top:24px;left:46%;opacity:.55" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#F2A7BA" stroke-width="1.5" aria-hidden="true"><path d="M32 6c10 12 10 40 0 52C22 46 22 18 32 6z"/><path d="M32 14v40"/></svg>
     <svg class="float-slow" style="position:absolute;bottom:40px;left:4%;opacity:.45" width="90" height="90" viewBox="0 0 64 64" fill="none" stroke="#F2A7BA" stroke-width="1.2" aria-hidden="true"><circle cx="32" cy="32" r="6"/><path d="M32 26c-6-10 6-18 0-22M32 26c6-10-6-18 0-22M26 32c-10-6-18 6-22 0M26 32c-10 6-18-6-22 0M38 32c10-6 18 6 22 0M38 32c10 6 18-6 22 0M32 38c-6 10 6 18 0 22M32 38c6 10-6 18 0 22"/></svg>
@@ -455,6 +475,8 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
     const name = PRODUCTS[btn.dataset.i].name;
     cart[name] = (cart[name] || 0) + 1;
     saveCart(); renderCart();
+    const count = $("cartCount");
+    count.classList.remove("bump"); void count.offsetWidth; count.classList.add("bump");
     btn.textContent = "Added ✓";
     setTimeout(() => { btn.textContent = "Add to cart"; }, 1200);
   });
@@ -516,6 +538,22 @@ nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items
   });
 
   renderCart();
+
+  // ===== STICKY NAV =====
+  const topbar = $("topbar");
+  const onScroll = () => topbar.classList.toggle("scrolled", window.scrollY > 40);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Underline the menu link for the section on screen
+  const navLinks = [...document.querySelectorAll('.nav-links a:not(.btn)')];
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  ["top", "shop", "occasions", "order", "branches"].forEach(id => spy.observe($(id)));
 </script>
 </body>
 </html>
