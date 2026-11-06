@@ -110,6 +110,23 @@ header{background:var(--wine);color:#FBE7EC}
 .branch p{margin:0;font-size:15px;line-height:1.6;color:var(--wine-soft)}
 .branch .btn{align-self:flex-start}
 
+/* footer */
+.site-footer{background:var(--wine);color:#F3D6DE}
+.footer-cta{padding:80px 0 56px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px;border-bottom:1px solid #6E3550}
+.footer-cta p{margin:0;font-size:clamp(36px,5vw,60px);font-weight:500;line-height:1.05;color:var(--cream);max-width:720px}
+.footer-cta em{color:var(--accent)}
+.footer-grid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:48px;padding:56px 0}
+.footer-brand p{margin:18px 0 0;max-width:340px;font-size:15px;line-height:1.7}
+.site-footer h3{margin:0 0 18px;font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent)}
+.site-footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.5}
+.site-footer ul a{display:inline-flex;align-items:center;gap:8px;color:#F3D6DE;text-decoration:none;transition:color .2s ease}
+.site-footer ul a:hover{color:var(--accent)}
+.footer-bottom{border-top:1px solid #6E3550;padding:24px 0 32px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:13px;color:#D9AFBE}
+.footer-bottom a{color:var(--accent);font-weight:700;text-decoration:none}
+.footer-bottom a:hover{color:var(--cream)}
+@media (max-width:860px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-brand{grid-column:1/-1}}
+@media (max-width:520px){.footer-grid{grid-template-columns:1fr;gap:36px}}
+
 /* cart */
 .cart-btn{position:relative;display:inline-flex;align-items:center;gap:8px;background:none;border:1.5px solid var(--accent);border-radius:999px;color:#FBE7EC;padding:10px 18px;font:inherit;font-weight:500;cursor:pointer}
 .cart-btn:hover{background:rgba(242,167,186,.15)}
@@ -210,16 +227,51 @@ header{background:var(--wine);color:#FBE7EC}
 </section>
 
 <!-- ===== FOOTER ===== -->
-<footer style="background:var(--wine);color:#F3D6DE">
-  <div class="wrap" style="padding-top:72px;padding-bottom:40px;display:flex;flex-direction:column;gap:40px">
-    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px">
-      <p class="serif" style="margin:0;font-size:clamp(36px,5vw,60px);font-weight:500;line-height:1.05;color:var(--cream);max-width:720px">Let's make <em style="color:var(--accent)">someone's day</em> bloom.</p>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-cta">
+      <p class="serif">Let's make <em>someone's day</em> bloom.</p>
       <a href="index.html#branches" class="btn btn-accent">Order now</a>
     </div>
-    <div style="border-top:1px solid #6E3550;padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;font-size:14px">
-      <span>© 2026 Gayle's Flower Shop · Cavite · Imus · Boni-EDSA</span>
-      <span>Fresh flowers, handcrafted with love.</span>
-      <span>Powered by: <a href="https://multiplytalents.io" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:none">Multiply Talents</a></span>
+
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#F2A7BA" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="18" r="4"/><path d="M18 14c-3-6 3-10 0-12M18 14c3-6-3-10 0-12"/><path d="M14 18c-6-3-10 3-12 0M14 18c-6 3-10-3-12 0"/><path d="M22 18c6-3 10 3 12 0M22 18c6 3 10-3 12 0"/><path d="M18 22c-3 6 3 10 0 12M18 22c3 6-3 10 0 12"/></svg>
+          <span>Gayle's Flower Shop</span>
+        </a>
+        <p>Fresh bouquets, flower boxes and arrangements, handcrafted for the moments that matter most.</p>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="index.html#occasions">Occasions</a></li>
+          <li><a href="index.html#order">How to order</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Our branches</h3>
+        <ul>
+          <li><a href="https://www.facebook.com/groups/351630443651243/user/100063697824285/" target="_blank" rel="noopener" aria-label="Cavite branch on Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9H16.5l.5-4h-3.5V8.8c0-.5.3-.8 1-.8z"/></svg>Cavite</a></li>
+          <li><a href="https://www.facebook.com/groups/351630443651243/user/100078109568096/" target="_blank" rel="noopener" aria-label="Imus branch on Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9H16.5l.5-4h-3.5V8.8c0-.5.3-.8 1-.8z"/></svg>Imus</a></li>
+          <li><a href="https://www.facebook.com/groups/351630443651243/user/61555185975524/" target="_blank" rel="noopener" aria-label="Boni-EDSA branch on Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9H16.5l.5-4h-3.5V8.8c0-.5.3-.8 1-.8z"/></svg>Boni-EDSA</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Ordering</h3>
+        <ul>
+          <li>Order via Facebook Messenger</li>
+          <li>Pick-up or delivery</li>
+          <li>Prices confirmed in chat</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 Gayle's Flower Shop. All rights reserved.</span>
+      <span>Powered by <a href="https://multiplytalents.io" target="_blank" rel="noopener">Multiply Talents</a></span>
     </div>
   </div>
 </footer>
