@@ -162,7 +162,7 @@ header{background:var(--wine);color:#FBE7EC}
       <span>Gayle's Flower Shop</span>
     </a>
     <div class="nav-links">
-      <a href="#shop">Shop</a>
+      <a href="shop.html">Shop</a>
       <a href="#occasions">Occasions</a>
       <a href="#order">How to order</a>
       <button type="button" class="cart-btn" id="cartOpen" aria-label="Open cart">
@@ -185,7 +185,7 @@ header{background:var(--wine);color:#FBE7EC}
       <h1>Say it with <em>flowers</em>, beautifully arranged.</h1>
       <p style="margin:0;max-width:520px;font-size:18px;line-height:1.65;color:#F3D6DE">Fresh bouquets, flower boxes and arrangements for every moment that matters — handcrafted by Gayle's Flower Shop and ready to brighten someone's day.</p>
       <div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:8px">
-        <a href="#shop" class="btn btn-accent">Browse the catalog</a>
+        <a href="shop.html" class="btn btn-accent">Browse the shop</a>
         <a href="#branches" class="btn btn-outline">Find a branch</a>
       </div>
     </div>
@@ -227,6 +227,7 @@ header{background:var(--wine);color:#FBE7EC}
 
   <!-- Product cards are generated from the PRODUCTS list in the script at the bottom -->
   <div class="grid-products" id="products"></div>
+  <a href="shop.html" class="btn btn-dark" style="align-self:center">View the full shop &rarr;</a>
 </section>
 
 <!-- ===== OCCASIONS ===== -->
@@ -560,7 +561,7 @@ header{background:var(--wine);color:#FBE7EC}
       navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
     });
   }, { rootMargin: "-45% 0px -50% 0px" });
-  ["top", "shop", "occasions", "order", "branches"].forEach(id => spy.observe($(id)));
+  ["top", "occasions", "order", "branches"].forEach(id => spy.observe($(id)));
 </script>
 </body>
 </html>

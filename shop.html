@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop · Gayle's Flower Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wine:#4A1530; --wine-soft:#6A3A50; --rose:#8C2F55;
+  --accent:#F2A7BA; --blush:#FBF1F3; --blush-2:#F6DCE3;
+  --pink-1:#F6C9D4; --pink-2:#E9B4C3; --peach:#F3DCC8; --mint:#DCE8DF;
+  --green:#2F5D46; --green-line:#5E8A73; --cream:#FFF5F7;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--blush);color:var(--wine);font-family:Manrope,system-ui,sans-serif}
+a{color:var(--wine)}a:hover{color:var(--rose)}
+img{display:block;width:100%;height:100%;object-fit:cover}
+.serif{font-family:'Cormorant Garamond',serif}
+.wrap{max-width:1280px;margin:0 auto;padding-left:32px;padding-right:32px}
+.eyebrow{margin:0;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green)}
+.h2{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(40px,5vw,64px);line-height:1.02}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;border-radius:999px;transition:transform .2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn-accent{background:var(--accent);color:var(--wine);padding:16px 30px;font-size:16px}
+.btn-accent:hover{color:var(--wine)}
+.btn-outline{border:1.5px solid var(--accent);color:var(--cream);padding:16px 30px;font-size:16px}
+.btn-outline:hover{color:var(--cream)}
+.btn-dark{background:var(--wine);color:var(--cream);padding:14px 22px;font-size:15px}
+.btn-dark:hover{color:var(--cream)}
+.photo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;color:#6A2040;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-align:center}
+
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(8deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.float{animation:float 6s ease-in-out infinite}
+.float-slow{animation:float 9s ease-in-out infinite}
+.rise{animation:rise .9s ease-out both}
+.rise-2{animation:rise .9s .2s ease-out both}
+.rise-3{animation:rise .9s .4s ease-out both}
+.track{animation:marquee 28s linear infinite}
+.card{transition:transform .3s ease,box-shadow .3s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(74,21,48,.16)}
+@media (prefers-reduced-motion:reduce){.float,.float-slow,.rise,.rise-2,.rise-3,.track,.topbar,.cart-count.bump{animation:none}}
+
+/* sticky navigation */
+html{scroll-padding-top:96px}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+@keyframes bump{0%,100%{transform:scale(1)}40%{transform:scale(1.45)}70%{transform:scale(.9)}}
+.topbar{position:sticky;top:0;z-index:40;background:var(--wine);color:#FBE7EC;animation:slideDown .7s ease-out both;transition:background-color .35s ease,box-shadow .35s ease}
+.topbar.scrolled{background:rgba(74,21,48,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(74,21,48,.25)}
+nav{padding-top:20px;padding-bottom:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;transition:padding .35s ease}
+.topbar.scrolled nav{padding-top:10px;padding-bottom:10px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:#FBE7EC}
+.logo:hover{color:#FBE7EC}
+.logo svg{transition:transform .6s ease}
+.logo:hover svg{transform:rotate(45deg)}
+.topbar.scrolled .logo svg{transform:rotate(90deg) scale(.85)}
+.logo span{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:.5px;transition:font-size .35s ease}
+.topbar.scrolled .logo span{font-size:24px}
+.nav-links{display:flex;flex-wrap:wrap;align-items:center;gap:28px;font-size:15px;font-weight:500}
+.nav-links a{color:#FBE7EC;text-decoration:none}
+.nav-links a:not(.btn){position:relative;padding:4px 0}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.nav-links a:not(.btn):hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-links a.active{color:var(--accent)}
+.cart-count.bump{animation:bump .45s ease}
+
+/* header + hero */
+header{background:var(--wine);color:#FBE7EC}
+.nav-links .btn-accent{padding:12px 22px;font-size:15px;color:var(--wine)}
+.hero{padding-top:64px;padding-bottom:112px;display:flex;flex-wrap:wrap;align-items:center;gap:56px;position:relative}
+.hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:28px}
+.hero h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(52px,7vw,96px);line-height:.98;color:var(--cream)}
+.hero h1 em{color:var(--accent)}
+.hero-art{flex:1 1 480px;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:end}
+.arch-up{height:440px;border-radius:999px 999px 28px 28px;background:var(--pink-1)}
+.arch-down{height:250px;border-radius:28px 28px 999px 999px;background:var(--pink-2)}
+
+/* marquee */
+.marquee{background:var(--accent);color:var(--wine);padding:18px 0;overflow:hidden;white-space:nowrap}
+.marquee .track{display:inline-flex;gap:48px;font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;font-weight:600}
+
+/* products */
+.grid-products{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px}
+.product{background:#fff;border-radius:28px;padding:14px;display:flex;flex-direction:column;gap:16px}
+.product .photo{aspect-ratio:4/5;border-radius:20px;position:relative}
+.tag{position:absolute;top:14px;left:14px;background:#fff;color:var(--wine);font-size:11px;letter-spacing:1px;padding:7px 12px;border-radius:999px;z-index:1}
+.product h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1.1}
+.price{font-size:17px;font-weight:700;color:var(--green)}
+
+/* occasions */
+.occasion{border:1px solid var(--green-line);border-radius:28px;padding:32px 28px;display:flex;flex-direction:column;gap:14px}
+.occasion .num{font-family:'Cormorant Garamond',serif;font-size:52px;font-style:italic;color:var(--accent);line-height:1}
+.occasion h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600}
+.occasion p{margin:0;font-size:15px;line-height:1.65;color:#D9E4DC}
+
+/* steps */
+.steps{flex:1 1 520px;min-width:0;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:18px}
+.steps li{background:#fff;border-radius:24px;padding:26px 28px;display:flex;gap:22px;align-items:center}
+.steps .n{flex:none;width:56px;height:56px;border-radius:999px;background:var(--pink-1);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600}
+.steps strong{font-size:18px}
+.steps span.t{font-size:15px;line-height:1.55;color:var(--wine-soft)}
+
+/* branches */
+.branch{background:#fff;border-radius:32px;padding:36px 32px;display:flex;flex-direction:column;gap:16px}
+.branch h3{margin:0;font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
+.branch p{margin:0;font-size:15px;line-height:1.6;color:var(--wine-soft)}
+.branch .btn{align-self:flex-start}
+
+/* cart */
+.cart-btn{position:relative;display:inline-flex;align-items:center;gap:8px;background:none;border:1.5px solid var(--accent);border-radius:999px;color:#FBE7EC;padding:10px 18px;font:inherit;font-weight:500;cursor:pointer}
+.cart-btn:hover{background:rgba(242,167,186,.15)}
+.cart-count{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--wine);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.btn-add{border:none;cursor:pointer;font-family:inherit}
+.cart-overlay{position:fixed;inset:0;background:rgba(74,21,48,.45);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:50}
+.cart-overlay.open{opacity:1;pointer-events:auto}
+.cart{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--blush);color:var(--wine);transform:translateX(100%);transition:transform .3s ease;z-index:51;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(74,21,48,.2)}
+.cart.open{transform:none}
+.cart-head{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--blush-2)}
+.cart-head h2{margin:0;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600}
+.cart-close{background:none;border:none;font-size:30px;line-height:1;color:var(--wine);cursor:pointer;padding:4px 8px}
+.cart-body{flex:1;overflow-y:auto;padding:16px 24px}
+.cart-items{display:flex;flex-direction:column;gap:14px}
+.cart-back{background:none;border:none;color:var(--rose);font:inherit;font-size:14px;font-weight:700;cursor:pointer;padding:0;margin-bottom:6px}
+.checkout{display:flex;flex-direction:column;gap:16px}
+[hidden]{display:none !important}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field legend{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);padding:0}
+.field label small{font-weight:500;letter-spacing:0;text-transform:none;color:var(--wine-soft)}
+.field input,.field select,.field textarea{font:inherit;font-size:15px;padding:12px 14px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;color:var(--wine);width:100%}
+.field textarea{resize:vertical;min-height:80px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.field fieldset{border:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.choice{display:flex;gap:10px}
+.choice label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;font-size:15px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--wine);cursor:pointer}
+.choice label:has(input:checked){border-color:var(--rose);background:var(--blush-2)}
+.field-hint{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
+.cart-empty{margin:40px 0;text-align:center;color:var(--wine-soft);line-height:1.6}
+.cart-item{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:10px}
+.cart-item img{width:64px;height:76px;border-radius:12px;flex:none}
+.cart-item .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cart-item strong{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1}
+.qty{display:inline-flex;align-items:center;gap:10px}
+.qty button{width:28px;height:28px;border-radius:999px;border:1px solid var(--pink-2);background:var(--blush);color:var(--wine);font-size:16px;cursor:pointer;line-height:1}
+.cart-remove{background:none;border:none;color:var(--rose);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:0}
+.cart-foot{padding:20px 24px 28px;border-top:1px solid var(--blush-2);display:flex;flex-direction:column;gap:12px}
+.cart-foot .btn{justify-content:center;border:none;cursor:pointer;font-family:inherit}
+.cart-foot .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.cart-note{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
+/* shop page */
+.page-head{padding-top:72px;padding-bottom:88px;display:flex;flex-direction:column;gap:20px;position:relative}
+.page-head h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(48px,6.5vw,88px);line-height:1;color:var(--cream)}
+.page-head h1 em{color:var(--accent)}
+.crumbs{margin:0;font-size:14px;color:#F3D6DE}
+.crumbs a{color:var(--accent);text-decoration:none}
+.crumbs a:hover{color:var(--cream)}
+.filters{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:inherit;font-size:14px;font-weight:700;padding:10px 18px;border-radius:999px;border:1.5px solid var(--pink-2);background:#fff;color:var(--wine);cursor:pointer;transition:background-color .2s ease,border-color .2s ease}
+.chip:hover{border-color:var(--rose)}
+.chip[aria-pressed="true"]{background:var(--wine);border-color:var(--wine);color:var(--cream)}
+.chip .n{opacity:.6;font-weight:500;margin-left:4px}
+.result-count{margin:0;font-size:14px;color:var(--wine-soft)}
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY NAVIGATION ===== -->
+<div class="topbar" id="topbar">
+  <nav class="wrap" aria-label="Main">
+    <a href="index.html" class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#F2A7BA" stroke-width="1.6" aria-hidden="true"><circle cx="18" cy="18" r="4"/><path d="M18 14c-3-6 3-10 0-12M18 14c3-6-3-10 0-12"/><path d="M14 18c-6-3-10 3-12 0M14 18c-6 3-10-3-12 0"/><path d="M22 18c6-3 10 3 12 0M22 18c6 3 10-3 12 0"/><path d="M18 22c-3 6 3 10 0 12M18 22c3 6-3 10 0 12"/></svg>
+      <span>Gayle's Flower Shop</span>
+    </a>
+    <div class="nav-links">
+      <a href="shop.html" class="active" aria-current="page">Shop</a>
+      <a href="index.html#occasions">Occasions</a>
+      <a href="index.html#order">How to order</a>
+      <button type="button" class="cart-btn" id="cartOpen" aria-label="Open cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+        Cart <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="index.html#branches" class="btn btn-accent">Order now</a>
+    </div>
+  </nav>
+</div>
+<!-- ===== PAGE HEADER ===== -->
+<header>
+  <section class="wrap page-head rise">
+    <svg class="float" style="position:absolute;top:28px;right:8%;opacity:.5" width="72" height="72" viewBox="0 0 64 64" fill="none" stroke="#F2A7BA" stroke-width="1.5" aria-hidden="true"><path d="M32 6c10 12 10 40 0 52C22 46 22 18 32 6z"/><path d="M32 14v40"/></svg>
+    <p class="crumbs"><a href="index.html">Home</a> &nbsp;/&nbsp; Shop</p>
+    <h1>The <em>flower</em> shop</h1>
+    <p style="margin:0;max-width:560px;font-size:18px;line-height:1.65;color:#F3D6DE">Browse every bouquet, gift set and arrangement. Add your favorites to the cart, then check out to send your order to the nearest branch on Facebook.</p>
+  </section>
+</header>
+
+<!-- ===== SHOP / CATALOG ===== -->
+<section id="shop" class="wrap" style="padding-top:72px;padding-bottom:112px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+    <p class="result-count" id="resultCount" aria-live="polite"></p>
+  </div>
+
+  <!-- Product cards are generated from the PRODUCTS list in the script at the bottom -->
+  <div class="grid-products" id="products"></div>
+
+  <p style="margin:0;font-size:15px;line-height:1.65;color:var(--wine-soft)">Designs may vary slightly with the season's freshest flowers. Prices are confirmed by the branch in the Facebook chat.</p>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:var(--wine);color:#F3D6DE">
+  <div class="wrap" style="padding-top:72px;padding-bottom:40px;display:flex;flex-direction:column;gap:40px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px">
+      <p class="serif" style="margin:0;font-size:clamp(36px,5vw,60px);font-weight:500;line-height:1.05;color:var(--cream);max-width:720px">Let's make <em style="color:var(--accent)">someone's day</em> bloom.</p>
+      <a href="index.html#branches" class="btn btn-accent">Order now</a>
+    </div>
+    <div style="border-top:1px solid #6E3550;padding-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;font-size:14px">
+      <span>© 2026 Gayle's Flower Shop · Cavite · Imus · Boni-EDSA</span>
+      <span>Fresh flowers, handcrafted with love.</span>
+      <span>Powered by: <a href="https://multiplytalents.io" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:none">Multiply Talents</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== CART DRAWER ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart" id="cart" aria-label="Cart" aria-hidden="true">
+  <div class="cart-head">
+    <h2 id="cartTitle">Your cart</h2>
+    <button type="button" class="cart-close" id="cartClose" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-items" id="cartItems"></div>
+
+    <!-- Checkout form (step 2) -->
+    <form class="checkout" id="checkoutForm" hidden>
+      <button type="button" class="cart-back" id="cartBack">&larr; Back to cart</button>
+      <div class="field">
+        <label for="coName">Full name</label>
+        <input id="coName" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="coPhone">Mobile number</label>
+        <input id="coPhone" name="phone" type="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
+      </div>
+      <div class="field">
+        <label for="coBranch">Branch</label>
+        <select id="coBranch" name="branch" required>
+          <option value="">Choose a branch</option>
+          <option value="Cavite">Cavite</option>
+          <option value="Imus">Imus</option>
+          <option value="Boni-EDSA">Boni-EDSA</option>
+        </select>
+      </div>
+      <div class="field">
+        <fieldset>
+          <legend>Pick-up or delivery</legend>
+          <div class="choice">
+            <label><input type="radio" name="method" value="Pick-up" checked> Pick-up</label>
+            <label><input type="radio" name="method" value="Delivery"> Delivery</label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="field" id="addressField" hidden>
+        <label for="coAddress">Delivery address</label>
+        <textarea id="coAddress" name="address" autocomplete="street-address"></textarea>
+      </div>
+      <div class="field">
+        <label for="coDate">Date needed</label>
+        <input id="coDate" name="date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="coColor">Flower color you want</label>
+        <textarea id="coColor" name="color" placeholder="e.g. all red roses, pastel pink and white, yellow sunflowers with purple accents" required></textarea>
+        <p class="field-hint">We'll match your colors as closely as the season's fresh flowers allow.</p>
+      </div>
+      <div class="field">
+        <label for="coMessage">Message <small>(optional)</small></label>
+        <textarea id="coMessage" name="message" placeholder="Card message, recipient's name, or special requests"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="cart-foot">
+    <button type="button" class="btn btn-accent" id="cartCheckout" disabled>Checkout</button>
+    <button type="submit" form="checkoutForm" class="btn btn-accent" id="cartSend" hidden>Send order on Facebook</button>
+    <p class="cart-note" id="cartNote">Prices are confirmed by the branch in the Facebook chat.</p>
+  </div>
+</aside>
+
+<script>
+  // ===== EDIT YOUR PRODUCTS HERE =====
+  // image: path or URL to the photo (leave "" to show a placeholder)
+  const PRODUCTS = [
+    { cat: "Gift set", name: "Sunflower Love Bear",        price: "Message for price", image: "images/sunflower-teddy-bear.jpg" },
+    { cat: "Bouquet",  name: "Pink Blush Bouquet",        price: "Message for price", image: "images/pink-blush-bouquet.jpg" },
+    { cat: "Bouquet",  name: "Classic Red Roses",          price: "Message for price", image: "images/classic-red-roses.jpg" },
+    { cat: "Bouquet",  name: "Red & Blush Roses",          price: "Message for price", image: "images/red-and-blush-roses.jpg" },
+    { cat: "Bouquet",  name: "Orchid Luxe Bouquet",        price: "Message for price", image: "images/orchid-luxe-bouquet.jpg" },
+    { cat: "Standee",  name: "Grand Celebration Standee",  price: "Message for price", image: "images/grand-celebration-standee.jpg" },
+    { cat: "Sympathy", name: "White Daisy Wreath",         price: "Message for price", image: "images/white-daisy-wreath.jpg" },
+    { cat: "Sympathy", name: "Orchid & Anthurium Tribute", price: "Message for price", image: "images/orchid-and-anthurium-tribute.jpg" }
+  ];
+  const TONES = ["#F6C9D4", "#F3DCC8", "#E9B4C3", "#DCE8DF"];
+  const ICON = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+  const grid = document.getElementById("products");
+  PRODUCTS.forEach((p, i) => {
+    const card = document.createElement("article");
+    card.className = "product card";
+    card.dataset.cat = p.cat;
+    const media = p.image
+      ? `<img src="${p.image}" alt="${p.name}" loading="lazy">`
+      : `${ICON}[Catalog photo]`;
+    card.innerHTML = `
+      <div class="photo" style="background:${TONES[i % TONES.length]}">
+        <span class="tag">${p.cat}</span>${media}
+      </div>
+      <div style="padding:0 8px 8px;display:flex;flex-direction:column;gap:10px">
+        <h3>${p.name}</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span class="price">${p.price}</span>
+          <button type="button" class="btn btn-dark btn-add" data-i="${i}" style="font-size:14px;padding:12px 18px">Add to cart</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // ===== CATEGORY FILTERS =====
+  // Built from the categories used in PRODUCTS, so new categories appear automatically
+  const cats = ["All", ...new Set(PRODUCTS.map(p => p.cat))];
+  const filters = document.getElementById("filters");
+  filters.innerHTML = cats.map(c => {
+    const n = c === "All" ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === c).length;
+    return `<button type="button" class="chip" data-cat="${c}" aria-pressed="false">${c}<span class="n">${n}</span></button>`;
+  }).join("");
+
+  function applyFilter(cat) {
+    if (!cats.includes(cat)) cat = "All";
+    let shown = 0;
+    [...grid.children].forEach(card => {
+      const match = cat === "All" || card.dataset.cat === cat;
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    filters.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.cat === cat));
+    document.getElementById("resultCount").textContent = `Showing ${shown} ${shown === 1 ? "arrangement" : "arrangements"}`;
+  }
+  filters.addEventListener("click", e => {
+    const b = e.target.closest(".chip");
+    if (b) applyFilter(b.dataset.cat);
+  });
+  // Allow links like shop.html?cat=Bouquet
+  applyFilter(new URLSearchParams(location.search).get("cat") || "All");
+
+  // ===== CART =====
+  // TESTING: every branch sends to the test profile.
+  // Real links to restore after testing:
+  //   Cavite:    https://www.facebook.com/groups/351630443651243/user/100063697824285/
+  //   Imus:      https://www.facebook.com/groups/351630443651243/user/100078109568096/
+  //   Boni-EDSA: https://www.facebook.com/groups/351630443651243/user/61555185975524/
+  const TEST_LINK = "https://www.facebook.com/phoebekate.tapales";
+  const BRANCH_LINKS = {
+    "Cavite": TEST_LINK,
+    "Imus": TEST_LINK,
+    "Boni-EDSA": TEST_LINK
+  };
+  const $ = id => document.getElementById(id);
+  let cart = {}; // product name -> quantity
+  try { cart = JSON.parse(localStorage.getItem("gayles-cart")) || {}; } catch (e) {}
+
+  function saveCart() {
+    try { localStorage.setItem("gayles-cart", JSON.stringify(cart)); } catch (e) {}
+  }
+
+  function renderCart() {
+    const names = Object.keys(cart).filter(n => PRODUCTS.some(p => p.name === n));
+    $("cartCount").textContent = names.reduce((sum, n) => sum + cart[n], 0);
+    $("cartItems").innerHTML = names.length ? names.map(n => {
+      const p = PRODUCTS.find(p => p.name === n);
+      return `<div class="cart-item">
+        <img src="${p.image}" alt="">
+        <div class="info">
+          <strong>${p.name}</strong>
+          <div class="qty">
+            <button type="button" data-dec="${n}" aria-label="Fewer">&minus;</button>
+            <span>${cart[n]}</span>
+            <button type="button" data-inc="${n}" aria-label="More">+</button>
+          </div>
+          <button type="button" class="cart-remove" data-rm="${n}">Remove</button>
+        </div>
+      </div>`;
+    }).join("") : '<p class="cart-empty">Your cart is empty.<br>Add an arrangement from the catalog.</p>';
+    $("cartCheckout").disabled = !names.length;
+    if (!names.length) showStep("cart");
+  }
+
+  // "cart" = review items, "checkout" = fill out the order form
+  function showStep(step) {
+    const checkout = step === "checkout";
+    $("cartTitle").textContent = checkout ? "Checkout" : "Your cart";
+    $("cartItems").hidden = checkout;
+    $("checkoutForm").hidden = !checkout;
+    $("cartCheckout").hidden = checkout;
+    $("cartSend").hidden = !checkout;
+    $("cartNote").textContent = checkout
+      ? "We'll copy your order. Paste it in the branch's Facebook chat to confirm the price."
+      : "Prices are confirmed by the branch in the Facebook chat.";
+    $("cartBody").scrollTop = 0;
+  }
+
+  function openCart(open) {
+    $("cart").classList.toggle("open", open);
+    $("cartOverlay").classList.toggle("open", open);
+    $("cart").setAttribute("aria-hidden", !open);
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open) showStep("cart");
+  }
+
+  grid.addEventListener("click", e => {
+    const btn = e.target.closest(".btn-add");
+    if (!btn) return;
+    const name = PRODUCTS[btn.dataset.i].name;
+    cart[name] = (cart[name] || 0) + 1;
+    saveCart(); renderCart();
+    const count = $("cartCount");
+    count.classList.remove("bump"); void count.offsetWidth; count.classList.add("bump");
+    btn.textContent = "Added ✓";
+    setTimeout(() => { btn.textContent = "Add to cart"; }, 1200);
+  });
+
+  $("cartItems").addEventListener("click", e => {
+    const d = e.target.dataset;
+    if (d.inc) cart[d.inc]++;
+    else if (d.dec) { if (--cart[d.dec] < 1) delete cart[d.dec]; }
+    else if (d.rm) delete cart[d.rm];
+    else return;
+    saveCart(); renderCart();
+  });
+
+  $("cartOpen").addEventListener("click", () => openCart(true));
+  $("cartClose").addEventListener("click", () => openCart(false));
+  $("cartOverlay").addEventListener("click", () => openCart(false));
+  document.addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
+  $("cartCheckout").addEventListener("click", () => showStep("checkout"));
+  $("cartBack").addEventListener("click", () => showStep("cart"));
+
+  // Show the address box only for delivery
+  const form = $("checkoutForm");
+  form.addEventListener("change", e => {
+    if (e.target.name !== "method") return;
+    const delivery = e.target.value === "Delivery";
+    $("addressField").hidden = !delivery;
+    $("coAddress").required = delivery;
+  });
+
+  // Earliest date is today
+  const now = new Date();
+  $("coDate").min = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(form));
+    const branch = f.branch;
+    const date = new Date(f.date + "T00:00").toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" });
+    const lines = [
+      `Hi Gayle's Flower Shop (${branch})! I'd like to order:`,
+      ...Object.keys(cart).map(n => `- ${n} x${cart[n]}`),
+      "",
+      `Name: ${f.name}`,
+      `Mobile: ${f.phone}`,
+      f.method === "Delivery" ? `Delivery to: ${f.address}` : `Pick-up at ${branch} branch`,
+      `Date needed: ${date}`,
+      `Flower color: ${f.color}`
+    ];
+    if (f.message.trim()) lines.push(`Message: ${f.message}`);
+    const text = lines.join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      $("cartNote").textContent = "Order copied! Paste it in the Facebook chat to confirm.";
+    } catch (e) {
+      $("cartNote").textContent = "Copy this into the Facebook chat: " + text.replace(/\n/g, " ");
+    }
+    const win = window.open(BRANCH_LINKS[branch], "_blank");
+    if (win) win.opener = null;
+  });
+
+  renderCart();
+
+  // ===== STICKY NAV =====
+  const topbar = $("topbar");
+  const onScroll = () => topbar.classList.toggle("scrolled", window.scrollY > 40);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>
