@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gayle&#39;s Flower Shop · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+:root {
+  --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-anthropic-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --cds-dur-slow: 420ms;
+  --cds-ease-out: cubic-bezier(.2,.8,.2,1);
+}
+html, body { margin: 0; background: #F6F1E9; }
+.dash-skeleton { color: transparent !important; background: #EFE8DC; border-radius: 6px; min-width: 3ch; display: inline-block; }
+</style>
+<script>
+/* Mock data + a tiny stand-in for the dashboard runtime ("dash") so this file runs on its own. */
+(function () {
+  const DATA = {"weekly": [{"day": "2026-05-03", "walkin_revenue": 720, "event_revenue": 460, "walkin_deliveries": 9, "event_deliveries": 3}, {"day": "2026-05-04", "walkin_revenue": 610, "event_revenue": 730, "walkin_deliveries": 11, "event_deliveries": 5}, {"day": "2026-05-05", "walkin_revenue": 780, "event_revenue": 745, "walkin_deliveries": 12, "event_deliveries": 6}, {"day": "2026-05-06", "walkin_revenue": 860, "event_revenue": 830, "walkin_deliveries": 14, "event_deliveries": 6}, {"day": "2026-05-07", "walkin_revenue": 1040, "event_revenue": 1065, "walkin_deliveries": 18, "event_deliveries": 8}, {"day": "2026-05-08", "walkin_revenue": 1312, "event_revenue": 1095, "walkin_deliveries": 22, "event_deliveries": 9}, {"day": "2026-05-09", "walkin_revenue": 1585, "event_revenue": 1255, "walkin_deliveries": 26, "event_deliveries": 11}], "order_stages": [{"stage": "In prep", "count": 12}, {"stage": "Out for delivery", "count": 14}, {"stage": "Ready for pickup", "count": 8}], "cold_room": [{"time": "06:00", "temp_f": 37, "humidity": 87}, {"time": "07:00", "temp_f": 37, "humidity": 88}, {"time": "08:00", "temp_f": 38, "humidity": 88}, {"time": "09:00", "temp_f": 37, "humidity": 89}, {"time": "10:00", "temp_f": 38, "humidity": 87}, {"time": "11:00", "temp_f": 39, "humidity": 86}, {"time": "12:00", "temp_f": 38, "humidity": 88}, {"time": "13:00", "temp_f": 38, "humidity": 88}], "kpis": [{"week": "2026-05-03", "stems_received_week": 1292, "stems_wasted_week": 31, "stems_received_prior": 1180, "stems_wasted_prior": 37}], "orders": [{"id": "PS-2041", "customer": "Margaret Holloway", "event_type": "Mother's Day Luxe Bouquet", "window": "10:00–12:00", "ingredients": "Garden roses, ranunculus, sweet pea, eucalyptus", "status": "Assembling", "fulfillment": "Delivery", "total": 185}, {"id": "PS-2042", "customer": "Chen & Ortiz Wedding", "event_type": "Bridal Bouquet", "window": "Pickup 13:30", "ingredients": "White O'Hara garden roses, lily of the valley, stephanotis", "status": "Watering/Cooling", "fulfillment": "Pickup", "total": 420}, {"id": "PS-2043", "customer": "Dunmore Family", "event_type": "Sympathy Wreath", "window": "11:00–12:00", "ingredients": "White lilies, chrysanthemums, salal, eucalyptus", "status": "Driver Dispatched", "fulfillment": "Delivery", "total": 265}, {"id": "PS-2044", "customer": "Northfield Legal LLP", "event_type": "Weekly Office Subscription", "window": "09:30–10:30", "ingredients": "Parrot tulips, ruscus, waxflower", "status": "Driver Dispatched", "fulfillment": "Delivery", "total": 140}, {"id": "PS-2045", "customer": "Priya Raman", "event_type": "Mother's Day Petite Posy", "window": "12:00–14:00", "ingredients": "Peonies, spray roses, silver sage", "status": "Assembling", "fulfillment": "Delivery", "total": 78}, {"id": "PS-2046", "customer": "The Linden Hotel", "event_type": "Lobby Installation", "window": "14:00–16:00", "ingredients": "Delphinium, snapdragons, flowering quince branches", "status": "Assembling", "fulfillment": "Delivery", "total": 640}, {"id": "PS-2047", "customer": "Sofia Marchetti", "event_type": "Bridal Party Boutonnières", "window": "Pickup 15:00", "ingredients": "Spray roses, waxflower, dusty miller", "status": "Watering/Cooling", "fulfillment": "Pickup", "total": 96}, {"id": "PS-2048", "customer": "Grace Kim", "event_type": "Birthday Hand-tied", "window": "15:00–17:00", "ingredients": "Ranunculus, anemones, seeded eucalyptus", "status": "Watering/Cooling", "fulfillment": "Delivery", "total": 95}], "inventory": [{"stem": "Ranunculus", "variety": "Hanoi, blush", "on_hand": 8, "par": 60, "condition": "Low stock", "detail": "8 stems left · reorder from Sunny Slope Farm"}, {"stem": "White O'Hara Garden Roses", "variety": "David Austin", "on_hand": 45, "par": 60, "condition": "Peak soon", "detail": "2 days to peak bloom · hold for Chen & Ortiz"}, {"stem": "Lily of the Valley", "variety": "Convallaria", "on_hand": 15, "par": 40, "condition": "Low stock", "detail": "15 stems left · bridal work only"}, {"stem": "Peonies", "variety": "Sarah Bernhardt", "on_hand": 36, "par": 50, "condition": "Peak soon", "detail": "Opening fast in cooler 2 · use first"}, {"stem": "Sweet Pea", "variety": "Spencer mix", "on_hand": 40, "par": 50, "condition": "Short vase life", "detail": "3 days vase life left · retail bunches"}, {"stem": "Eucalyptus", "variety": "Silver dollar", "on_hand": 120, "par": 100, "condition": "Optimal", "detail": "Hydrated and conditioned"}, {"stem": "Ruscus", "variety": "Italian", "on_hand": 85, "par": 80, "condition": "Optimal", "detail": "Good through next week"}], "deliveries": [{"stop": 1, "eta": "11:15", "customer": "Dunmore Family", "address": "Whitaker Funeral Home, 410 Alder St", "driver": "Marcus Bell", "vehicle": "Van 2", "note": "Call on arrival · venue loading dock", "x": 28, "y": 34, "status": "En route"}, {"stop": 2, "eta": "12:05", "customer": "Margaret Holloway", "address": "18 Primrose Ln", "driver": "Marcus Bell", "vehicle": "Van 2", "note": "Leave on shaded porch · text photo", "x": 62, "y": 22, "status": "Next"}, {"stop": 3, "eta": "14:30", "customer": "The Linden Hotel", "address": "900 Harbor Blvd, service entrance", "driver": "Ana Duarte", "vehicle": "Van 1", "note": "Check in with concierge · install by 15:45", "x": 78, "y": 70, "status": "Scheduled"}], "notifications": [{"id": "n1", "title": "Ranunculus below par", "detail": "8 stems left · reorder suggested", "time": "8 min ago", "unread": true}, {"id": "n2", "title": "Driver dispatched", "detail": "Marcus Bell left with PS-2043 & PS-2044", "time": "22 min ago", "unread": true}, {"id": "n3", "title": "New custom order", "detail": "Grace Kim · Birthday Hand-tied", "time": "41 min ago", "unread": true}, {"id": "n4", "title": "Cold room check passed", "detail": "Logged by Elena Vance", "time": "1 h ago", "unread": false}]};
+  const calcs = {}, draws = {}, onDatas = [];
+  let params = {}, queued = false;
+  const resolve = (id) => {
+    if (DATA[id]) return {status: 'ok', data: DATA[id], columns: Object.keys(DATA[id][0] || {}), meta: []};
+    if (calcs[id]) { const c = calcs[id]; return {status: 'ok', data: c.fn(...c.inputs.map((i) => resolve(i).data)), meta: []}; }
+    return {status: 'missing', data: []};
+  };
+  const runDraw = (name) => document.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => {
+    if (el.closest('[hidden]') || !draws[name]) return;
+    try { draws[name](el); } catch (e) { console.error(name, e); }
+  });
+  const runAll = () => { queued = false; onDatas.forEach((f) => f()); Object.keys(draws).forEach(runDraw); };
+  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(runAll); } };
+  window.dash = {
+    data: resolve,
+    calc: (id, o) => { calcs[id] = o; },
+    loader: () => {},
+    draw: (name, fn) => { if (fn) draws[name] = fn; else runDraw(name); },
+    onData: (fn) => { onDatas.push(fn); },
+    params: () => ({...params}),
+    setParams: (o) => { for (const k in o) { if (o[k] == null) delete params[k]; else params[k] = o[k]; } schedule(); },
+    resetParams: () => { params = {}; schedule(); },
+    setLink: (n) => { try { history.replaceState(null, '', '#' + n); } catch (e) {} },
+    refresh: () => {},
+    colors: [],
+    _start: () => { runAll(); let w = innerWidth; addEventListener('resize', () => { if (innerWidth !== w) { w = innerWidth; schedule(); } }); },
+  };
+})();
+</script>
+<style>
+#dash-root { --dash-gutter: 0; }
+.pa-cq { container-type: inline-size; container-name: pa; }
+.pa {
+  --pa-cream: #F6F1E9; --pa-paper: #FFFCF7; --pa-line: #E6DDCF; --pa-line-2: #EFE8DC;
+  --pa-ink: #2A2925; --pa-muted: #7B7468; --pa-faint: #A69E91;
+  --pa-forest: #2E4A3B; --pa-forest-2: #3D6150; --pa-forest-ink: #EAE4D8;
+  --pa-sage: #9FB197; --pa-sage-soft: #E5EBDD; --pa-sage-ink: #4E6447;
+  --pa-rose: #C58C88; --pa-rose-soft: #F5E4E0; --pa-rose-ink: #92524D;
+  --pa-amber: #C49A52; --pa-amber-soft: #F6EBD5; --pa-amber-ink: #85622A;
+  --pa-sky-soft: #E3E9EC; --pa-sky-ink: #4C6573;
+  --pa-shadow: 0 1px 2px rgba(60,48,30,.05), 0 6px 20px -8px rgba(60,48,30,.12);
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  background: var(--pa-cream); color: var(--pa-ink);
+  font-family: var(--font-anthropic-sans); font-size: 14px; line-height: 1.45;
+  min-height: 100vh; position: relative;
+}
+.pa *, .pa *::before, .pa *::after { box-sizing: border-box; }
+:where(.pa) button { font: inherit; color: inherit; cursor: pointer; }
+.pa [hidden] { display: none !important; }
+.pa-ic { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.pa-ic.sm { width: 14px; height: 14px; }
+.pa-ic.lg { width: 20px; height: 20px; }
+.pa-serif { font-family: var(--font-anthropic-serif); font-weight: 400; }
+.pa .num, .pa-num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Sidebar ---------- */
+.pa-side {
+  width: 256px; z-index: 5; flex: none;
+  background: linear-gradient(180deg, #2E4A3B 0%, #283F33 100%); color: var(--pa-forest-ink);
+  transition: width .28s cubic-bezier(.2,.8,.2,1);
+}
+.pa-side-in { position: sticky; top: 0; height: 100vh; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 6px; padding: 18px 14px 14px; transition: padding .28s; }
+.pa-brand { display: flex; align-items: center; gap: 11px; padding: 4px 6px 18px; border-bottom: 1px solid rgba(234,228,216,.12); margin-bottom: 10px; min-width: 0; }
+.pa-logo { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center; background: radial-gradient(circle at 30% 25%, #F5E4E0, #D9AFA9); color: #6F3D39; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
+.pa-logo .pa-ic { width: 22px; height: 22px; }
+.pa-brand-t { min-width: 0; }
+.pa-brand-name { font-family: var(--font-anthropic-serif); font-size: 17px; line-height: 1.15; color: #FBF7F0; white-space: nowrap; }
+.pa-brand-sub { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #B9C4B0; white-space: nowrap; margin-top: 3px; }
+.pa-nav-label { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(234,228,216,.5); padding: 8px 12px 4px; }
+.pa-nav { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.pa-nav-btn {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 0; border-radius: 10px;
+  background: transparent; color: rgba(234,228,216,.78); text-align: left; position: relative; white-space: nowrap;
+  transition: background .18s, color .18s;
+}
+.pa-nav-btn:hover { background: rgba(255,255,255,.07); color: #FBF7F0; }
+.pa-nav-btn[aria-current="page"] { background: rgba(245,228,224,.14); color: #FFFFFF; }
+.pa-nav-btn[aria-current="page"]::before { content: ""; position: absolute; left: -14px; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: var(--pa-rose); }
+.pa-nav-btn:focus-visible { outline: 2px solid #D9AFA9; outline-offset: 1px; }
+.pa-nav-pill { margin-left: auto; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: rgba(197,140,136,.28); color: #F9DCD7; }
+.pa-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.pa-collapse { display: flex; align-items: center; gap: 10px; border: 0; background: transparent; color: rgba(234,228,216,.6); padding: 8px 12px; border-radius: 10px; font-size: 12.5px; white-space: nowrap; }
+.pa-collapse:hover { color: #FBF7F0; background: rgba(255,255,255,.06); }
+.pa-collapse .pa-ic { transition: transform .28s; }
+.pa-profile { display: flex; align-items: center; gap: 10px; padding: 9px; border-radius: 14px; background: rgba(255,255,255,.07); border: 1px solid rgba(234,228,216,.1); min-width: 0; transition: background .18s; }
+.pa-profile:hover { background: rgba(255,255,255,.11); }
+.pa-avatar { position: relative; width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-anthropic-serif); font-size: 15px; color: #3B2A27; background: linear-gradient(135deg, #F2D3CD, #C8D5BE); }
+.pa-avatar::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; background: #7FC48E; border: 2px solid #2B4437; }
+.pa-profile-t { min-width: 0; line-height: 1.25; }
+.pa-profile-name { color: #FBF7F0; font-weight: 500; white-space: nowrap; }
+.pa-profile-role { font-size: 12px; color: #B9C4B0; white-space: nowrap; }
+.pa-profile-out { margin-left: auto; border: 0; background: transparent; color: rgba(234,228,216,.55); padding: 6px; border-radius: 8px; display: grid; }
+.pa-profile-out:hover { color: #fff; background: rgba(255,255,255,.08); }
+.pa.is-collapsed .pa-side { width: 76px; }
+.pa.is-collapsed .pa-hide { display: none; }
+.pa.is-collapsed .pa-collapse .pa-ic { transform: rotate(180deg); }
+.pa.is-collapsed .pa-nav-btn, .pa.is-collapsed .pa-collapse { justify-content: center; padding-inline: 0; }
+.pa.is-collapsed .pa-profile { justify-content: center; padding: 6px; background: transparent; border-color: transparent; }
+.pa.is-collapsed .pa-brand { justify-content: center; padding-inline: 0; }
+
+/* ---------- Main ---------- */
+.pa-main { min-width: 0; display: flex; flex-direction: column; }
+.pa-top {
+  position: sticky; top: 0; z-index: 4; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 14px 28px; background: rgba(246,241,233,.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--pa-line);
+}
+.pa-search { flex: 1 1 260px; min-width: 0; display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 14px; border-radius: 12px; background: var(--pa-paper); border: 1px solid var(--pa-line); color: var(--pa-muted); transition: border-color .18s, box-shadow .18s; }
+.pa-search:focus-within { border-color: var(--pa-sage); box-shadow: 0 0 0 3px rgba(159,177,151,.25); }
+.pa-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; color: var(--pa-ink); }
+.pa-search input::placeholder { color: var(--pa-faint); }
+.pa-kbd { font-size: 11px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--pa-line); color: var(--pa-faint); }
+.pa-top-r { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pa-date { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 10px 0 12px; border-radius: 12px; background: var(--pa-paper); border: 1px solid var(--pa-line); color: var(--pa-forest); position: relative; }
+.pa-date:hover { border-color: var(--pa-sage); }
+.pa-date select { appearance: none; -webkit-appearance: none; border: 0; outline: 0; background: transparent; font: inherit; color: var(--pa-ink); padding-right: 20px; cursor: pointer; max-width: 230px; }
+.pa-date .pa-chev { position: absolute; right: 10px; pointer-events: none; color: var(--pa-muted); }
+.pa-iconbtn { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--pa-line); background: var(--pa-paper); color: var(--pa-forest); transition: border-color .18s, background .18s; }
+.pa-iconbtn:hover, .pa-iconbtn[aria-expanded="true"] { border-color: var(--pa-sage); background: #fff; }
+.pa-badge { position: absolute; top: -6px; right: -6px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--pa-rose-ink); color: #fff; font-size: 11px; font-weight: 600; display: grid; place-items: center; border: 2px solid var(--pa-cream); font-variant-numeric: tabular-nums; }
+.pa-btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 12px; border: 1px solid transparent; font-weight: 500; white-space: nowrap; transition: transform .15s, box-shadow .18s, background .18s; }
+.pa-btn:hover { transform: translateY(-1px); }
+.pa-btn:active { transform: none; }
+.pa-btn-primary { background: var(--pa-forest); color: #FBF7F0; box-shadow: 0 6px 16px -8px rgba(46,74,59,.7); }
+.pa-btn-primary:hover { background: var(--pa-forest-2); }
+.pa-btn-soft { background: var(--pa-rose-soft); color: var(--pa-rose-ink); border-color: #EBCFC9; }
+.pa-btn-soft:hover { background: #F1D8D3; }
+.pa-btn-ghost { background: transparent; border-color: var(--pa-line); color: var(--pa-ink); }
+.pa-btn-ghost:hover { background: var(--pa-paper); }
+
+/* notifications */
+.pa-notif-wrap { position: relative; }
+.pa-pop { position: absolute; right: 0; top: calc(100% + 8px); width: min(340px, 86vw); background: var(--pa-paper); border: 1px solid var(--pa-line); border-radius: 16px; box-shadow: 0 18px 40px -16px rgba(60,48,30,.35); padding: 8px; z-index: 10; }
+.pa-pop-h { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 10px; font-weight: 500; }
+.pa-pop-h small { color: var(--pa-muted); font-weight: 400; font-size: 12px; }
+.pa-notif-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pa-notif { display: flex; gap: 10px; padding: 10px; border-radius: 10px; }
+.pa-notif:hover { background: var(--pa-cream); }
+.pa-notif-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex: none; background: transparent; }
+.pa-notif.is-unread .pa-notif-dot { background: var(--pa-rose-ink); }
+.pa-notif-t { font-weight: 500; }
+.pa-notif-d, .pa-notif-time { font-size: 12.5px; color: var(--pa-muted); }
+.pa-notif-time { margin-left: auto; white-space: nowrap; font-size: 11.5px; }
+
+/* content */
+.pa-content { padding: 26px 28px 40px; display: flex; flex-direction: column; gap: 22px; container-type: inline-size; container-name: pacontent; }
+.pa-hello { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pa-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--pa-rose-ink); background: var(--pa-rose-soft); padding: 4px 10px; border-radius: 999px; }
+.pa-h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.12; margin: 10px 0 6px; letter-spacing: -.01em; }
+.pa-take { margin: 0; color: var(--pa-muted); font-size: 15px; max-width: 64ch; }
+.pa-take b { color: var(--pa-ink); font-weight: 600; }
+.pa-live { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--pa-sage-ink); background: var(--pa-sage-soft); padding: 6px 12px; border-radius: 999px; }
+.pa-live i { width: 7px; height: 7px; border-radius: 50%; background: #5E9A6B; box-shadow: 0 0 0 0 rgba(94,154,107,.5); }
+
+/* KPI cards */
+.pa-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; }
+.pa-card { background: var(--pa-paper); border: 1px solid var(--pa-line); border-radius: 18px; box-shadow: var(--pa-shadow); transition: box-shadow .22s, transform .22s, border-color .22s; min-width: 0; }
+.pa-kpi { padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; }
+.pa-kpi:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(60,48,30,.05), 0 16px 32px -14px rgba(60,48,30,.25); border-color: #DCCFBD; }
+.pa-kpi-h { display: flex; align-items: center; gap: 10px; color: var(--pa-muted); font-size: 13px; }
+.pa-chip-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.pa-ci-forest { background: var(--pa-sage-soft); color: var(--pa-forest); }
+.pa-ci-rose { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.pa-ci-sky { background: var(--pa-sky-soft); color: var(--pa-sky-ink); }
+.pa-ci-amber { background: var(--pa-amber-soft); color: var(--pa-amber-ink); }
+.pa-kpi-h .pa-win { margin-left: auto; font-size: 11.5px; color: var(--pa-faint); }
+.pa-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 34px; line-height: 1; letter-spacing: -.01em; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.pa-big small { font-family: var(--font-anthropic-sans); font-size: 13px; color: var(--pa-muted); letter-spacing: 0; }
+.pa-kpi-sub { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--pa-muted); }
+.pa-delta { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; background: var(--pa-sage-soft); color: var(--pa-sage-ink); }
+.pa-delta.is-bad { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.pa-delta .pa-ic.down { display: none; }
+.pa-delta.is-neg .pa-ic.up { display: none; }
+.pa-delta.is-neg .pa-ic.down { display: inline; }
+.pa-spark { height: 40px; position: relative; }
+.pa-spark svg { display: block; overflow: visible; }
+.pa-stagebar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 3px; background: var(--pa-line-2); min-height: 10px; }
+.pa-stagebar span { display: block; height: 100%; border-radius: 3px; transition: flex-grow .5s; }
+.pa-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.pa-stage { display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 10px; background: var(--pa-cream); font-size: 11.5px; color: var(--pa-muted); line-height: 1.2; }
+.pa-stage b { font-size: 16px; color: var(--pa-ink); font-weight: 600; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 6px; }
+.pa-stage b::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--c); }
+.pa-status { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pa-status.ok { background: var(--pa-sage-soft); color: var(--pa-sage-ink); }
+.pa-status.bad { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.pa-status .pa-pulse { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pa-cold-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.pa-cold-hum { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; color: var(--pa-sky-ink); font-variant-numeric: tabular-nums; }
+.pa-meter { position: relative; height: 8px; border-radius: 999px; background: var(--pa-line-2); margin-top: 18px; min-height: 8px; }
+.pa-meter-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(90deg, var(--pa-sage), var(--pa-forest-2)); }
+.pa-meter-goal { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--pa-rose-ink); border-radius: 2px; }
+.pa-meter-goal span { position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-size: 10.5px; color: var(--pa-rose-ink); white-space: nowrap; }
+
+/* grid */
+.pa-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
+@container pacontent (min-width: 980px) { .pa-grid { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); } }
+.pa-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.pa-panel { padding: 20px; container-type: inline-size; container-name: papanel; }
+.pa-panel-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.pa-h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 20px; margin: 0; line-height: 1.2; display: flex; align-items: center; gap: 9px; }
+.pa-note { margin: 3px 0 0; font-size: 12.5px; color: var(--pa-muted); }
+.pa-livedot { width: 8px; height: 8px; border-radius: 50%; background: #5E9A6B; display: inline-block; }
+
+/* filter chips */
+.pa-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.pa-chipbtn { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--pa-line); background: transparent; font-size: 12.5px; color: var(--pa-muted); transition: all .18s; }
+.pa-chipbtn:hover { border-color: var(--pa-sage); color: var(--pa-ink); background: #fff; }
+.pa-chipbtn[aria-pressed="true"] { background: var(--pa-forest); border-color: var(--pa-forest); color: #FBF7F0; }
+.pa-chipbtn .pa-cnt { font-variant-numeric: tabular-nums; font-size: 11px; padding: 0 6px; border-radius: 999px; background: var(--pa-line-2); color: var(--pa-ink); min-width: 18px; text-align: center; }
+.pa-chipbtn[aria-pressed="true"] .pa-cnt { background: rgba(255,255,255,.18); color: #fff; }
+.pa-seg { display: inline-flex; padding: 3px; border-radius: 12px; background: var(--pa-cream); border: 1px solid var(--pa-line); }
+.pa-seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 9px; font-size: 12.5px; color: var(--pa-muted); transition: all .18s; }
+.pa-seg button[aria-pressed="true"] { background: var(--pa-paper); color: var(--pa-ink); box-shadow: 0 1px 3px rgba(60,48,30,.15); font-weight: 500; }
+
+/* queue table */
+.pa-tablewrap { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }
+.pa-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.pa-table th { text-align: left; font-weight: 500; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--pa-faint); padding: 0 10px 10px; border-bottom: 1px solid var(--pa-line); white-space: nowrap; }
+.pa-table td { padding: 12px 10px; border-bottom: 1px solid var(--pa-line-2); vertical-align: top; }
+.pa-table tbody tr { transition: background .15s; }
+.pa-table tbody tr:hover { background: #FBF6EE; }
+.pa-table tbody tr:last-child td { border-bottom: 0; }
+.pa-oid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--pa-muted); white-space: nowrap; }
+.pa-cust { font-weight: 500; }
+.pa-ev { display: inline-block; padding: 2px 9px; border-radius: 8px; background: var(--pa-cream); border: 1px solid var(--pa-line-2); font-size: 12px; }
+.pa-ev.is-bridal { background: #FBF0EE; border-color: #F0D9D4; color: var(--pa-rose-ink); }
+.pa-ev.is-sympathy { background: #EEF1F2; border-color: #DEE4E7; color: var(--pa-sky-ink); }
+.pa-ev.is-sub { background: var(--pa-sage-soft); border-color: #D6E0CC; color: var(--pa-sage-ink); }
+.pa-ev.is-mom { background: var(--pa-amber-soft); border-color: #EEDDB9; color: var(--pa-amber-ink); }
+.pa-win-cell { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--pa-ink); }
+.pa-ing { color: var(--pa-muted); font-size: 12.5px; min-width: 16ch; max-width: 26ch; }
+.pa-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; border: 1px solid transparent; font-size: 12px; font-weight: 600; white-space: nowrap; transition: transform .15s, box-shadow .15s; }
+.pa-tag:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -6px rgba(60,48,30,.4); }
+.pa-tag.s-assembling { background: var(--pa-amber-soft); color: var(--pa-amber-ink); border-color: #EEDDB9; }
+.pa-tag.s-dispatched { background: var(--pa-sage-soft); color: var(--pa-sage-ink); border-color: #D6E0CC; }
+.pa-tag.s-cooling { background: var(--pa-sky-soft); color: var(--pa-sky-ink); border-color: #D5DEE3; }
+.pa-tag.is-on { box-shadow: 0 0 0 2px var(--pa-paper), 0 0 0 3.5px currentColor; }
+.pa-empty { text-align: center; color: var(--pa-muted); padding: 26px 0 8px; margin: 0; font-size: 13px; }
+@container papanel (max-width: 860px) { .pa-hide-lg { display: none; } }
+@container papanel (max-width: 620px) { .pa-hide-md { display: none; } }
+@container papanel (max-width: 470px) { .pa-hide-sm { display: none; } }
+
+/* chart */
+.pa-chart { position: relative; min-height: 250px; }
+.pa-chart svg { display: block; }
+.pa-legend { display: flex; gap: 6px; flex-wrap: wrap; }
+.pa-legbtn { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--pa-line); background: transparent; font-size: 12.5px; color: var(--pa-ink); transition: opacity .18s, background .18s; }
+.pa-legbtn:hover { background: #fff; }
+.pa-legbtn[aria-pressed="false"] { opacity: .45; }
+.pa-legbtn[aria-pressed="false"] .pa-sw { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--pa-faint); }
+.pa-sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.pa-tip { position: absolute; pointer-events: none; background: #FFFDF9; border: 1px solid var(--pa-line); border-radius: 10px; box-shadow: 0 12px 28px -12px rgba(60,48,30,.35); padding: 8px 10px; font-size: 12px; min-width: 150px; z-index: 3; }
+.pa-tip-h { color: var(--pa-muted); margin-bottom: 4px; }
+.pa-tip-r { display: flex; align-items: center; gap: 7px; }
+.pa-tip-r b { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; padding-left: 12px; }
+.pa-tots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--pa-line); }
+.pa-tot { font-size: 12px; color: var(--pa-muted); }
+.pa-tot b { display: block; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 20px; color: var(--pa-ink); font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+/* inventory */
+.pa-inv { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; min-height: 120px; }
+.pa-inv-i { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 12px; border-radius: 14px; border: 1px solid var(--pa-line-2); background: #FFFEFB; transition: border-color .18s, transform .18s; }
+.pa-inv-i:hover { border-color: #DCCFBD; transform: translateX(2px); }
+.pa-inv-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; }
+.pa-inv-i.c-low .pa-inv-ic { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.pa-inv-i.c-peak .pa-inv-ic, .pa-inv-i.c-short .pa-inv-ic { background: var(--pa-amber-soft); color: var(--pa-amber-ink); }
+.pa-inv-i.c-ok .pa-inv-ic { background: var(--pa-sage-soft); color: var(--pa-sage-ink); }
+.pa-inv-top { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+.pa-inv-name { font-weight: 600; }
+.pa-inv-var { color: var(--pa-faint); font-size: 12px; font-weight: 400; margin-left: 4px; }
+.pa-cond { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; letter-spacing: .02em; white-space: nowrap; }
+.c-low .pa-cond { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.c-peak .pa-cond, .c-short .pa-cond { background: var(--pa-amber-soft); color: var(--pa-amber-ink); }
+.c-ok .pa-cond { background: var(--pa-sage-soft); color: var(--pa-sage-ink); }
+.pa-inv-d { font-size: 12.5px; color: var(--pa-muted); margin: 3px 0 8px; }
+.pa-inv-bar { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--pa-muted); font-variant-numeric: tabular-nums; }
+.pa-inv-track { flex: 1; height: 6px; background: var(--pa-line-2); border-radius: 999px; overflow: hidden; }
+.pa-inv-fill { height: 100%; border-radius: 999px; }
+.c-low .pa-inv-fill { background: var(--pa-rose); }
+.c-peak .pa-inv-fill, .c-short .pa-inv-fill { background: var(--pa-amber); }
+.c-ok .pa-inv-fill { background: var(--pa-sage); }
+
+/* delivery */
+.pa-map { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid var(--pa-line); background: #EEF0E6; min-height: 190px; }
+.pa-map svg { display: block; }
+.pa-pin { cursor: pointer; }
+.pa-pin circle.ring { transition: r .2s; }
+.pa-stops { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pa-stop { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 12px; border-radius: 14px; border: 1px solid var(--pa-line-2); background: #FFFEFB; text-align: left; transition: border-color .18s, background .18s, box-shadow .18s; }
+.pa-stop:hover { border-color: #DCCFBD; }
+.pa-stop.is-sel { border-color: var(--pa-forest-2); background: #FAFBF6; box-shadow: 0 0 0 3px rgba(61,97,80,.12); }
+.pa-stop-n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 13px; background: var(--pa-forest); color: #FBF7F0; font-variant-numeric: tabular-nums; }
+.pa-stop-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+.pa-stop-name { font-weight: 600; }
+.pa-eta { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--pa-forest); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pa-stop-addr { font-size: 12.5px; color: var(--pa-muted); margin-top: 2px; }
+.pa-stop-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.pa-mini { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; padding: 3px 8px; border-radius: 8px; background: var(--pa-cream); color: var(--pa-ink); }
+.pa-mini.note { background: var(--pa-rose-soft); color: var(--pa-rose-ink); }
+.pa-mini.st { background: var(--pa-sage-soft); color: var(--pa-sage-ink); font-weight: 600; }
+
+/* modal + toast */
+.pa-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(42,41,37,.38); backdrop-filter: blur(3px); }
+.pa-dialog { width: min(480px, 100%); background: var(--pa-paper); border-radius: 20px; border: 1px solid var(--pa-line); box-shadow: 0 30px 60px -20px rgba(42,41,37,.45); padding: 22px; max-height: 92vh; overflow: auto; }
+.pa-dialog-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.pa-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pa-field { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--pa-muted); }
+.pa-field.full { grid-column: 1 / -1; }
+.pa-field input, .pa-field select, .pa-field textarea { font: inherit; font-size: 14px; color: var(--pa-ink); background: #fff; border: 1px solid var(--pa-line); border-radius: 10px; padding: 9px 11px; outline: 0; }
+.pa-field textarea { resize: vertical; min-height: 70px; }
+.pa-field input:focus, .pa-field select:focus, .pa-field textarea:focus { border-color: var(--pa-sage); box-shadow: 0 0 0 3px rgba(159,177,151,.25); }
+.pa-dialog-f { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.pa-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 10px; background: var(--pa-forest); color: #FBF7F0; padding: 12px 16px; border-radius: 14px; box-shadow: 0 16px 36px -14px rgba(46,74,59,.7); font-size: 13.5px; max-width: calc(100% - 32px); }
+
+/* responsive */
+@container pa (max-width: 820px) {
+  .pa-side { width: 68px; }
+  .pa-side-in { padding: 16px 8px; }
+  .pa-hide, .pa-collapse { display: none; }
+  .pa-nav-btn { justify-content: center; padding-inline: 0; }
+  .pa-nav-btn[aria-current="page"]::before { left: -8px; }
+  .pa-brand { justify-content: center; padding-inline: 0; }
+  .pa-profile { justify-content: center; padding: 6px; background: transparent; border-color: transparent; }
+  .pa-top, .pa-content { padding-left: 16px; padding-right: 16px; }
+  .pa-btn-label { display: none; }
+  .pa-btn { padding: 0 12px; }
+  .pa-kbd { display: none; }
+}
+@container pa (max-width: 460px) {
+  .pa-side { width: 54px; }
+  .pa-side-in { padding: 12px 6px; }
+  .pa-logo { width: 34px; height: 34px; }
+  .pa-fields { grid-template-columns: 1fr; }
+  .pa-date select { max-width: 120px; }
+}
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pa-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes pa-ping { 0% { box-shadow: 0 0 0 0 rgba(94,154,107,.55); } 80%, 100% { box-shadow: 0 0 0 8px rgba(94,154,107,0); } }
+  .pa-card { animation: pa-rise var(--cds-dur-slow) var(--cds-ease-out) both; }
+  .pa-kpis .pa-card:nth-child(2) { animation-delay: 60ms; }
+  .pa-kpis .pa-card:nth-child(3) { animation-delay: 120ms; }
+  .pa-kpis .pa-card:nth-child(4) { animation-delay: 180ms; }
+  .pa-live i, .pa-livedot, .pa-status.ok .pa-pulse { animation: pa-ping 2s infinite; }
+  .pa-toast, .pa-dialog, .pa-pop { animation: pa-rise .22s var(--cds-ease-out) both; }
+}
+</style>
+</head>
+<body>
+<div id="dash-root">
+
+
+<div class="pa-cq">
+<div class="pa" id="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="pa-side" aria-label="Main navigation"><div class="pa-side-in">
+    <div class="pa-brand">
+      <div class="pa-logo"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/><path d="m8 8 1.88 1.88"/><path d="M14.12 9.88 16 8"/><path d="m8 16 1.88-1.88"/><path d="M14.12 14.12 16 16"/></svg></div>
+      <div class="pa-brand-t pa-hide">
+        <div class="pa-brand-name">Gayle&#39;s Flower Shop</div>
+        <div class="pa-brand-sub">Boutique Florist &amp; Events</div>
+      </div>
+    </div>
+    <div class="pa-nav-label pa-hide">Workspace</div>
+    <ul class="pa-nav">
+      <li><button class="pa-nav-btn" type="button" aria-current="page" data-target="top" title="Dashboard"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg><span class="pa-hide">Dashboard</span></button></li>
+      <li><button class="pa-nav-btn" type="button" data-target="queue" title="Orders"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="pa-hide">Orders</span><span class="pa-nav-pill pa-hide">Live</span></button></li>
+      <li><button class="pa-nav-btn" type="button" data-target="inventory" title="Stem Inventory"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg><span class="pa-hide">Stem Inventory</span></button></li>
+      <li><button class="pa-nav-btn" type="button" data-target="" title="Arrangement Recipes"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="pa-hide">Arrangement Recipes</span></button></li>
+      <li><button class="pa-nav-btn" type="button" data-target="queue" data-filter="Weekly Office Subscription" title="Subscriptions"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg><span class="pa-hide">Subscriptions</span></button></li>
+      <li><button class="pa-nav-btn" type="button" data-target="deliveries" title="Deliveries"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg><span class="pa-hide">Deliveries</span></button></li>
+    </ul>
+    <div class="pa-nav-label pa-hide">Studio</div>
+    <ul class="pa-nav">
+      <li><button class="pa-nav-btn" type="button" data-target="" title="Store Settings"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg><span class="pa-hide">Store Settings</span></button></li>
+    </ul>
+    <div class="pa-side-foot">
+      <button class="pa-collapse" type="button" aria-expanded="true" aria-label="Collapse sidebar"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg><span class="pa-hide">Collapse sidebar</span></button>
+      <div class="pa-profile" title="Elena Vance · Head Florist · On shift">
+        <div class="pa-avatar" aria-hidden="true">EV</div>
+        <div class="pa-profile-t pa-hide">
+          <div class="pa-profile-name">Elena Vance</div>
+          <div class="pa-profile-role">Head Florist · On shift</div>
+        </div>
+        <button class="pa-profile-out pa-hide" type="button" aria-label="Sign out" data-soon="1"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button>
+      </div>
+    </div>
+  </div></aside>
+
+  <!-- ================= MAIN ================= -->
+  <div class="pa-main">
+    <header class="pa-top" id="top">
+      <label class="pa-search">
+        <svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="pa-q" type="search" placeholder="Search orders, customers, floral varieties..." aria-label="Search orders, customers, floral varieties">
+        <span class="pa-kbd">/</span>
+      </label>
+      <div class="pa-top-r">
+        <label class="pa-date" title="Reporting window">
+          <svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+          <select class="pa-range" aria-label="Date range">
+            <option>Today, Mother's Day Weekend</option>
+            <option>Yesterday</option>
+            <option>This week</option>
+            <option>Last 30 days</option>
+          </select>
+          <span class="pa-chev"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+        </label>
+        <div class="pa-notif-wrap">
+          <button class="pa-iconbtn pa-bell" type="button" aria-label="Notifications" aria-expanded="false">
+            <svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="pa-badge" data-draw="val" data-source="notif_unread" data-field="n" data-fmt="int">—</span>
+          </button>
+          <div class="pa-pop" hidden>
+            <div class="pa-pop-h">Notifications <small>Today</small></div>
+            <ul class="pa-notif-list" data-draw="notif-list" data-source="notifications"></ul>
+          </div>
+        </div>
+        <button class="pa-btn pa-btn-soft pa-open" type="button" data-modal="waste" aria-label="Log Waste/Spoilage"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg><span class="pa-btn-label">Log Waste/Spoilage</span></button>
+        <button class="pa-btn pa-btn-primary pa-open" type="button" data-modal="order" aria-label="New Custom Order"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span class="pa-btn-label">New Custom Order</span></button>
+      </div>
+    </header>
+
+    <main class="pa-content">
+      <section class="pa-hello" id="overview">
+        <div>
+          <span class="pa-eyebrow"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/><path d="m8 8 1.88 1.88"/><path d="M14.12 9.88 16 8"/><path d="m8 16 1.88-1.88"/><path d="M14.12 14.12 16 16"/></svg> Mother's Day Weekend · Saturday</span>
+          <h1 class="pa-h1">Good morning, Elena</h1>
+          <p class="pa-take">Revenue is <b class="dash-skeleton" data-draw="val" data-source="rev" data-field="change" data-fmt="signedpct">—</b> on yesterday, <b class="dash-skeleton" data-draw="val" data-source="orders_total" data-field="total" data-fmt="int">—</b> orders are in motion, and <b class="dash-skeleton" data-draw="val" data-source="inv_alerts" data-field="n" data-fmt="int">—</b> stem lines need attention before the afternoon rush.</p>
+        </div>
+        <span class="pa-live"><i></i>Live · synced with the studio POS</span>
+      </section>
+
+      <!-- KPI ROW -->
+      <section class="pa-kpis" id="kpis" aria-label="Key metrics">
+        <article class="pa-card pa-kpi" id="kpi-revenue">
+          <div class="pa-kpi-h"><span class="pa-chip-ic pa-ci-forest"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>Daily revenue<span class="pa-win">Today</span></div>
+          <div class="pa-big"><span class="dash-skeleton" data-draw="val" data-source="rev" data-field="today" data-fmt="money">—</span></div>
+          <div class="pa-kpi-sub">
+            <span class="pa-delta" data-draw="val" data-source="rev" data-field="change" data-fmt="signedpct" data-tone="up-good">—</span>
+            <span>vs yesterday (<span data-draw="val" data-source="rev" data-field="yesterday" data-fmt="money0">—</span>)</span>
+          </div>
+          <div class="pa-spark" data-draw="rev-spark" data-source="weekly"></div>
+        </article>
+
+        <article class="pa-card pa-kpi" id="kpi-orders">
+          <div class="pa-kpi-h"><span class="pa-chip-ic pa-ci-amber"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span>Active orders<span class="pa-win">Right now</span></div>
+          <div class="pa-big"><span class="dash-skeleton" data-draw="val" data-source="orders_total" data-field="total" data-fmt="int">—</span><small>total</small></div>
+          <div class="pa-stagebar" data-draw="stage-bar" data-source="order_stages"></div>
+          <div class="pa-stages">
+            <div class="pa-stage" style="--c: var(--pa-amber)"><b data-draw="val" data-source="order_stages" data-field="count" data-where="stage=In prep" data-fmt="int">—</b>In prep</div>
+            <div class="pa-stage" style="--c: var(--pa-forest-2)"><b data-draw="val" data-source="order_stages" data-field="count" data-where="stage=Out for delivery" data-fmt="int">—</b>Out for delivery</div>
+            <div class="pa-stage" style="--c: var(--pa-rose)"><b data-draw="val" data-source="order_stages" data-field="count" data-where="stage=Ready for pickup" data-fmt="int">—</b>Ready for pickup</div>
+          </div>
+        </article>
+
+        <article class="pa-card pa-kpi" id="kpi-cold">
+          <div class="pa-kpi-h"><span class="pa-chip-ic pa-ci-sky"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h20"/><path d="M12 2v20"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg></span>Cold room<span class="pa-win">Last reading <span data-draw="val" data-source="cold_now" data-field="time">—</span></span></div>
+          <div class="pa-cold-row">
+            <div class="pa-big"><span class="dash-skeleton" data-draw="val" data-source="cold_now" data-field="temp_f" data-fmt="int">—</span><small>°F</small></div>
+            <span class="pa-cold-hum"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><span><span data-draw="val" data-source="cold_now" data-field="humidity" data-fmt="int">—</span>% humidity</span></span>
+          </div>
+          <div class="pa-kpi-sub">
+            <span class="pa-status ok" data-state="ok"><span class="pa-pulse"></span>Healthy</span>
+            <span class="pa-status bad" data-state="bad" hidden><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Out of range</span>
+            <span data-draw="cold-status" data-source="cold_now"></span>
+            <span>Target <span data-draw="cold-range">—</span></span>
+          </div>
+          <div class="pa-spark" data-draw="cold-spark" data-source="cold_room"></div>
+        </article>
+
+        <article class="pa-card pa-kpi" id="kpi-spoilage">
+          <div class="pa-kpi-h"><span class="pa-chip-ic pa-ci-rose"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>Spoilage rate<span class="pa-win">This week</span></div>
+          <div class="pa-big"><span class="dash-skeleton" data-draw="val" data-source="spoilage" data-field="rate" data-fmt="pct">—</span></div>
+          <div class="pa-kpi-sub">
+            <span class="pa-delta" data-draw="val" data-source="spoilage" data-field="change" data-fmt="pts" data-tone="down-good">—</span>
+            <span>vs last week · <span data-draw="val" data-source="kpis" data-field="stems_wasted_week" data-fmt="int">—</span> of <span data-draw="val" data-source="kpis" data-field="stems_received_week" data-fmt="int">—</span> stems lost</span>
+          </div>
+          <div class="pa-meter" data-draw="spoil-meter" data-source="spoilage"></div>
+        </article>
+      </section>
+
+      <!-- MAIN GRID -->
+      <section class="pa-grid">
+        <div class="pa-col">
+          <!-- Queue -->
+          <article class="pa-card pa-panel" id="queue">
+            <div class="pa-panel-h">
+              <div>
+                <h2 class="pa-h2"><span class="pa-livedot"></span>Live order fulfillment queue</h2>
+                <p class="pa-note">Today's custom work, newest first · click a status tag to filter</p>
+              </div>
+              <div class="pa-chips" role="group" aria-label="Filter by status">
+                <button class="pa-chipbtn pa-qchip" type="button" data-status="" aria-pressed="true">All <span class="pa-cnt" data-draw="val" data-source="status_counts" data-field="n" data-where="status=All" data-fmt="int">—</span></button>
+                <button class="pa-chipbtn pa-qchip" type="button" data-status="Assembling" aria-pressed="false">Assembling <span class="pa-cnt" data-draw="val" data-source="status_counts" data-field="n" data-where="status=Assembling" data-fmt="int">—</span></button>
+                <button class="pa-chipbtn pa-qchip" type="button" data-status="Driver Dispatched" aria-pressed="false">Dispatched <span class="pa-cnt" data-draw="val" data-source="status_counts" data-field="n" data-where="status=Driver Dispatched" data-fmt="int">—</span></button>
+                <button class="pa-chipbtn pa-qchip" type="button" data-status="Watering/Cooling" aria-pressed="false">Cooling <span class="pa-cnt" data-draw="val" data-source="status_counts" data-field="n" data-where="status=Watering/Cooling" data-fmt="int">—</span></button>
+              </div>
+            </div>
+            <div class="pa-tablewrap">
+              <table class="pa-table" data-source="orders" data-row-key="id">
+                <thead>
+                  <tr>
+                    <th data-field="id" class="pa-hide-lg">Order</th>
+                    <th data-field="customer">Customer</th>
+                    <th data-field="event_type">Event type</th>
+                    <th data-field="window" class="pa-hide-sm">Delivery window</th>
+                    <th data-field="ingredients" class="pa-hide-md">Floral ingredients</th>
+                    <th data-field="status">Status</th>
+                  </tr>
+                </thead>
+                <tbody data-draw="queue"></tbody>
+              </table>
+            </div>
+            <p class="pa-empty pa-q-empty" hidden>No orders match this filter. <button class="pa-btn-ghost pa-q-clear" type="button" style="border:1px solid var(--pa-line);border-radius:8px;padding:2px 8px;background:transparent">Clear filters</button></p>
+          </article>
+
+          <!-- Weekly chart -->
+          <article class="pa-card pa-panel" id="weekly">
+            <div class="pa-panel-h">
+              <div>
+                <h2 class="pa-h2">Weekly revenue &amp; deliveries</h2>
+                <p class="pa-note">Last 7 days · retail walk-ins vs event bookings</p>
+              </div>
+              <div class="pa-seg" role="group" aria-label="Measure">
+                <button class="pa-metric" type="button" data-metric="revenue" aria-pressed="true">Revenue</button>
+                <button class="pa-metric" type="button" data-metric="deliveries" aria-pressed="false">Deliveries</button>
+              </div>
+            </div>
+            <div class="pa-legend" style="margin-bottom:8px">
+              <button class="pa-legbtn" type="button" data-series="walkin" aria-pressed="true"><span class="pa-sw" style="background:var(--pa-forest-2)"></span>Retail walk-ins</button>
+              <button class="pa-legbtn" type="button" data-series="event" aria-pressed="true"><span class="pa-sw" style="background:var(--pa-rose)"></span>Event bookings</button>
+            </div>
+            <div class="pa-chart" data-draw="weekly-chart" data-source="weekly"></div>
+            <div class="pa-tots pa-tots-rev">
+              <div class="pa-tot">Walk-in revenue<b data-draw="val" data-source="week_totals" data-field="walkin_revenue" data-fmt="money0">—</b></div>
+              <div class="pa-tot">Event revenue<b data-draw="val" data-source="week_totals" data-field="event_revenue" data-fmt="money0">—</b></div>
+              <div class="pa-tot">Week total<b data-draw="val" data-source="week_totals" data-field="total_revenue" data-fmt="money0">—</b></div>
+            </div>
+            <div class="pa-tots pa-tots-del" hidden>
+              <div class="pa-tot">Walk-in deliveries<b data-draw="val" data-source="week_totals" data-field="walkin_deliveries" data-fmt="int">—</b></div>
+              <div class="pa-tot">Event deliveries<b data-draw="val" data-source="week_totals" data-field="event_deliveries" data-fmt="int">—</b></div>
+              <div class="pa-tot">Week total<b data-draw="val" data-source="week_totals" data-field="total_deliveries" data-fmt="int">—</b></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="pa-col">
+          <!-- Inventory -->
+          <article class="pa-card pa-panel" id="inventory">
+            <div class="pa-panel-h">
+              <div>
+                <h2 class="pa-h2"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Critical stem inventory</h2>
+                <p class="pa-note">Par levels and shelf life · coolers 1 &amp; 2</p>
+              </div>
+              <div class="pa-seg" role="group" aria-label="Show stems">
+                <button class="pa-invf" type="button" data-inv="attention" aria-pressed="true">Needs attention</button>
+                <button class="pa-invf" type="button" data-inv="all" aria-pressed="false">All</button>
+              </div>
+            </div>
+            <ul class="pa-inv" data-draw="inventory" data-source="inventory"></ul>
+          </article>
+
+          <!-- Deliveries -->
+          <article class="pa-card pa-panel" id="deliveries">
+            <div class="pa-panel-h">
+              <div>
+                <h2 class="pa-h2"><svg class="pa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Today's delivery run</h2>
+                <p class="pa-note">Next stops on the route · tap a stop to find it on the map</p>
+              </div>
+            </div>
+            <div class="pa-map" data-draw="route-map" data-source="deliveries"></div>
+            <ul class="pa-stops" data-draw="stops" data-source="deliveries"></ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  <div class="pa-modal" data-modal-id="order" hidden>
+    <div class="pa-dialog" role="dialog" aria-modal="true" aria-labelledby="pa-order-t">
+      <div class="pa-dialog-h">
+        <div>
+          <h2 class="pa-h2" id="pa-order-t">New custom order</h2>
+          <p class="pa-note">Capture the brief now · the design team picks it up in the queue</p>
+        </div>
+        <button class="pa-iconbtn pa-close" type="button" aria-label="Close"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      </div>
+      <div class="pa-fields">
+        <label class="pa-field full">Customer name<input type="text" placeholder="e.g. Harriet Lowell"></label>
+        <label class="pa-field">Occasion
+          <select><option>Mother's Day</option><option>Bridal</option><option>Sympathy</option><option>Birthday</option><option>Corporate / Subscription</option><option>Event installation</option></select>
+        </label>
+        <label class="pa-field">Fulfillment
+          <select><option>Delivery</option><option>Studio pickup</option></select>
+        </label>
+        <label class="pa-field">Date<input type="date"></label>
+        <label class="pa-field">Window
+          <select><option>09:00–11:00</option><option>11:00–13:00</option><option>13:00–15:00</option><option>15:00–17:00</option></select>
+        </label>
+        <label class="pa-field full">Palette &amp; stems<textarea placeholder="Blush garden roses, ranunculus, trailing jasmine…"></textarea></label>
+      </div>
+      <div class="pa-dialog-f">
+        <button class="pa-btn pa-btn-ghost pa-close" type="button">Cancel</button>
+        <button class="pa-btn pa-btn-primary pa-save" type="button" data-toast="order"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Create order</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pa-modal" data-modal-id="waste" hidden>
+    <div class="pa-dialog" role="dialog" aria-modal="true" aria-labelledby="pa-waste-t">
+      <div class="pa-dialog-h">
+        <div>
+          <h2 class="pa-h2" id="pa-waste-t">Log waste / spoilage</h2>
+          <p class="pa-note">Every logged stem feeds this week's spoilage rate</p>
+        </div>
+        <button class="pa-iconbtn pa-close" type="button" aria-label="Close"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      </div>
+      <div class="pa-fields">
+        <label class="pa-field full">Variety<select data-draw="waste-stem" data-source="inventory"></select></label>
+        <label class="pa-field">Stems lost<input type="number" min="1" step="1" placeholder="0"></label>
+        <label class="pa-field">Reason
+          <select><option>Botrytis / mould</option><option>Over-opened</option><option>Bent or snapped stem</option><option>Damaged in transit</option><option>Dehydrated</option></select>
+        </label>
+        <label class="pa-field full">Note<textarea placeholder="Which cooler, which bucket, anything the buyer should know…"></textarea></label>
+      </div>
+      <div class="pa-dialog-f">
+        <button class="pa-btn pa-btn-ghost pa-close" type="button">Cancel</button>
+        <button class="pa-btn pa-btn-soft pa-save" type="button" data-toast="waste"><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>Log spoilage</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pa-toast" data-toast-id="order" role="status" hidden><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Order drafted. This is a preview, so nothing was saved.</div>
+  <div class="pa-toast" data-toast-id="waste" role="status" hidden><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Spoilage logged. This is a preview, so nothing was saved.</div>
+  <div class="pa-toast" data-toast-id="soon" role="status" hidden><svg class="pa-ic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/><path d="m8 8 1.88 1.88"/><path d="M14.12 9.88 16 8"/><path d="m8 16 1.88-1.88"/><path d="M14.12 14.12 16 16"/></svg>That section isn't part of this preview yet.</div>
+</div>
+</div>
+
+<script>
+/* ---------- shared helpers ---------- */
+const PA_ICONS = {"flower": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5\"/><path d=\"M12 7.5V9\"/><path d=\"M7.5 12H9\"/><path d=\"M16.5 12H15\"/><path d=\"M12 16.5V15\"/><path d=\"m8 8 1.88 1.88\"/><path d=\"M14.12 9.88 16 8\"/><path d=\"m8 16 1.88-1.88\"/><path d=\"M14.12 14.12 16 16\"/>", "dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/>", "bag": "<path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/>", "sprout": "<path d=\"M7 20h10\"/><path d=\"M10 20c5.5-2.5.8-6.4 3-10\"/><path d=\"M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z\"/><path d=\"M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z\"/>", "book": "<path d=\"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z\"/><path d=\"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z\"/>", "repeat": "<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>", "truck": "<path d=\"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2\"/><path d=\"M15 18H9\"/><path d=\"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/>", "settings": "<path d=\"M20 7h-9\"/><path d=\"M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>", "plus": "<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>", "trash": "<path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/><path d=\"M10 11v6\"/><path d=\"M14 11v6\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\"/><path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\"/>", "calendar": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M16 2v4\"/><path d=\"M8 2v4\"/><path d=\"M3 10h18\"/>", "chev": "<path d=\"m6 9 6 6 6-6\"/>", "panel": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M9 3v18\"/><path d=\"m16 15-3-3 3-3\"/>", "dollar": "<path d=\"M12 2v20\"/><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"/>", "clipboard": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"M12 11h4\"/><path d=\"M12 16h4\"/><path d=\"M8 11h.01\"/><path d=\"M8 16h.01\"/>", "thermo": "<path d=\"M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z\"/>", "droplet": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>", "leaf": "<path d=\"M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z\"/><path d=\"M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12\"/>", "alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/>", "pin": "<path d=\"M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>", "x": "<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>", "up": "<path d=\"M22 7 13.5 15.5 8.5 10.5 2 17\"/><path d=\"M16 7h6v6\"/>", "down": "<path d=\"M22 17 13.5 8.5 8.5 13.5 2 7\"/><path d=\"M16 17h6v-6\"/>", "check": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/>", "note": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "hourglass": "<path d=\"M5 22h14\"/><path d=\"M5 2h14\"/><path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\"/><path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\"/>", "snow": "<path d=\"M2 12h20\"/><path d=\"M12 2v20\"/><path d=\"m20 16-4-4 4-4\"/><path d=\"m4 8 4 4-4 4\"/><path d=\"m16 4-4 4-4-4\"/><path d=\"m8 20 4-4 4 4\"/>", "scissors": "<circle cx=\"6\" cy=\"6\" r=\"3\"/><path d=\"M8.12 8.12 12 12\"/><path d=\"M20 4 8.12 15.88\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><path d=\"M14.8 14.8 20 20\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"5\"/><path d=\"M20 21a8 8 0 0 0-16 0\"/>", "logout": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"m16 17 5-5-5-5\"/><path d=\"M21 12H9\"/>"};
+const NS = 'http://www.w3.org/2000/svg';
+window.paIcon = (name, cls) => {
+  const s = document.createElementNS(NS, 'svg');
+  s.setAttribute('viewBox', '0 0 24 24');
+  s.setAttribute('class', cls || 'pa-ic sm');
+  s.setAttribute('aria-hidden', 'true');
+  s.innerHTML = PA_ICONS[name] || '';
+  return s;
+};
+window.paEl = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+};
+window.paCOLD = {tMin: 34, tMax: 40, hMin: 80, hMax: 95};
+window.paSPOIL_GOAL = 0.03;
+window.paSPOIL_MAX = 0.05;
+window.paStop = 1;
+
+/* ---------- calculations ---------- */
+dash.calc('rev', {
+  inputs: ['weekly'],
+  title: 'Revenue today vs yesterday',
+  description: 'Walk-in plus event revenue on the last two days of the weekly data, and the change between them.',
+  fn: (weekly) => {
+    const t = weekly[weekly.length - 1], y = weekly[weekly.length - 2];
+    const today = Number(t.walkin_revenue) + Number(t.event_revenue);
+    const yesterday = Number(y.walkin_revenue) + Number(y.event_revenue);
+    return [{day: t.day, today, yesterday, change: today / yesterday - 1}];
+  },
+});
+dash.calc('orders_total', {
+  inputs: ['order_stages'],
+  title: 'Active orders',
+  description: 'Orders in prep, out for delivery and ready for pickup, added together.',
+  fn: (order_stages) => [{total: order_stages.reduce((s, r) => s + Number(r.count), 0)}],
+});
+dash.calc('cold_now', {
+  inputs: ['cold_room'],
+  title: 'Latest cold room reading',
+  description: 'The most recent hourly cold room reading.',
+  fn: (cold_room) => [cold_room[cold_room.length - 1]],
+});
+dash.calc('spoilage', {
+  inputs: ['kpis'],
+  title: 'Spoilage rate',
+  description: 'Stems lost divided by stems received, this week and last, and the change in percentage points.',
+  fn: (kpis) => {
+    const k = kpis[0];
+    const rate = k.stems_wasted_week / k.stems_received_week;
+    const prior = k.stems_wasted_prior / k.stems_received_prior;
+    return [{rate, prior, change: rate - prior}];
+  },
+});
+dash.calc('status_counts', {
+  inputs: ['orders'],
+  title: 'Orders by status',
+  description: 'How many queue orders are in each status, plus all of them.',
+  fn: (orders) => {
+    const statuses = ['Assembling', 'Driver Dispatched', 'Watering/Cooling'];
+    return [{status: 'All', n: orders.length}, ...statuses.map((s) => ({status: s, n: orders.filter((o) => o.status === s).length}))];
+  },
+});
+dash.calc('inv_alerts', {
+  inputs: ['inventory'],
+  title: 'Stems needing attention',
+  description: 'Stem lines whose condition is anything other than Optimal.',
+  fn: (inventory) => [{n: inventory.filter((r) => r.condition !== 'Optimal').length}],
+});
+dash.calc('notif_unread', {
+  inputs: ['notifications'],
+  title: 'Unread notifications',
+  description: 'Notifications not yet read.',
+  fn: (notifications) => [{n: notifications.filter((r) => r.unread === true).length}],
+});
+dash.calc('week_totals', {
+  inputs: ['weekly'],
+  title: 'Week totals',
+  description: 'Walk-in and event revenue and deliveries summed over the seven days.',
+  fn: (weekly) => {
+    const sum = (k) => weekly.reduce((s, r) => s + Number(r[k]), 0);
+    const o = {walkin_revenue: sum('walkin_revenue'), event_revenue: sum('event_revenue'), walkin_deliveries: sum('walkin_deliveries'), event_deliveries: sum('event_deliveries')};
+    o.total_revenue = o.walkin_revenue + o.event_revenue;
+    o.total_deliveries = o.walkin_deliveries + o.event_deliveries;
+    return [o];
+  },
+});
+
+/* ---------- simple values ---------- */
+const FMT = {
+  money: d3.format('$,.2f'),
+  money0: d3.format('$,.0f'),
+  int: d3.format(','),
+  pct: d3.format('.1%'),
+  signedpct: (v) => (v >= 0 ? '+' : '−') + d3.format('.1%')(Math.abs(v)),
+  pts: (v) => (v >= 0 ? '+' : '−') + (Math.abs(v) * 100).toFixed(1) + ' pts',
+  raw: (v) => String(v),
+};
+dash.draw('val', (el) => {
+  const g = dash.data(el.dataset.source);
+  if (g.status !== 'ok') {
+    el.textContent = '—';
+    if (g.status !== 'loading') el.classList.remove('dash-skeleton');
+    return;
+  }
+  let rows = Array.isArray(g.data) ? g.data : [];
+  const w = el.dataset.where;
+  if (w) {
+    const p = [...new URLSearchParams(w)];
+    rows = rows.filter((r) => p.every(([k, v]) => String(r[k]) === v));
+  }
+  const r = rows[0];
+  el.classList.remove('dash-skeleton');
+  if (!r || r[el.dataset.field] == null) { el.textContent = '—'; return; }
+  const v = r[el.dataset.field];
+  el.textContent = (FMT[el.dataset.fmt] || FMT.raw)(v);
+  const tone = el.dataset.tone;
+  if (tone) {
+    const good = tone === 'up-good' ? v >= 0 : v <= 0;
+    el.classList.toggle('is-bad', !good);
+    el.classList.toggle('is-neg', v < 0);
+  }
+});
+
+/* ---------- small tooltip helper for sparklines ---------- */
+window.paSparkTip = (el, svg, pts, label) => {
+  const tip = paEl('div', 'pa-tip');
+  tip.style.display = 'none';
+  tip.style.minWidth = '0';
+  el.append(tip);
+  const dot = svg.append('circle').attr('r', 3.5).attr('fill', '#fff').attr('stroke', 'var(--pa-forest)').attr('stroke-width', 2).style('display', 'none');
+  svg.on('pointermove', (ev) => {
+    const [mx] = d3.pointer(ev);
+    const i = d3.leastIndex(pts, (p) => Math.abs(p.x - mx));
+    const p = pts[i];
+    dot.style('display', null).attr('cx', p.x).attr('cy', p.y);
+    tip.replaceChildren(...label(i));
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth;
+    tip.style.left = Math.max(0, Math.min(el.clientWidth - tw, p.x - tw / 2)) + 'px';
+    tip.style.top = (p.y - tip.offsetHeight - 10) + 'px';
+  }).on('pointerleave', () => { tip.style.display = 'none'; dot.style('display', 'none'); });
+};
+
+dash.draw('rev-spark', (el) => {
+  el.replaceChildren();
+  const g = dash.data('weekly');
+  if (g.status !== 'ok') return;
+  const rows = g.data;
+  const W = el.clientWidth || 220, H = 40;
+  const tot = rows.map((r) => Number(r.walkin_revenue) + Number(r.event_revenue));
+  const x = d3.scaleBand(rows.map((r) => r.day), [0, W]).padding(0.28);
+  const y = d3.scaleLinear([0, d3.max(tot)], [H - 2, 2]);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+  svg.selectAll('rect').data(rows).join('rect')
+    .attr('x', (d) => x(d.day)).attr('width', x.bandwidth())
+    .attr('y', (d, i) => y(tot[i])).attr('height', (d, i) => H - 2 - y(tot[i])).attr('rx', 3)
+    .attr('fill', (d, i) => i === rows.length - 1 ? 'var(--pa-forest-2)' : 'var(--pa-sage-soft)');
+  const fd = d3.utcFormat('%a %b %-d');
+  paSparkTip(el, svg, rows.map((d, i) => ({x: x(d.day) + x.bandwidth() / 2, y: y(tot[i])})), (i) => [paEl('div', 'pa-tip-h', fd(new Date(rows[i].day))), paEl('b', '', FMT.money0(tot[i]))]);
+});
+
+dash.draw('stage-bar', (el) => {
+  el.replaceChildren();
+  const g = dash.data('order_stages');
+  if (g.status !== 'ok') return;
+  const colors = {'In prep': 'var(--pa-amber)', 'Out for delivery': 'var(--pa-forest-2)', 'Ready for pickup': 'var(--pa-rose)'};
+  for (const r of g.data) {
+    const s = paEl('span');
+    s.style.flexGrow = String(r.count);
+    s.style.background = colors[r.stage] || 'var(--pa-sage)';
+    el.append(s);
+  }
+});
+
+dash.draw('cold-status', (el) => {
+  const g = dash.data('cold_now');
+  const box = el.parentElement;
+  if (!box) return;
+  const r = g.status === 'ok' ? g.data[0] : null;
+  const C = window.paCOLD;
+  const ok = !r || (r.temp_f >= C.tMin && r.temp_f <= C.tMax && r.humidity >= C.hMin && r.humidity <= C.hMax);
+  box.querySelectorAll('[data-state]').forEach((s) => { s.hidden = s.dataset.state !== (ok ? 'ok' : 'bad'); });
+});
+dash.draw('cold-range', (el) => {
+  const C = window.paCOLD;
+  el.textContent = `${C.tMin}–${C.tMax}°F · ${C.hMin}–${C.hMax}%`;
+});
+
+dash.draw('cold-spark', (el) => {
+  el.replaceChildren();
+  const g = dash.data('cold_room');
+  if (g.status !== 'ok') return;
+  const rows = g.data, C = window.paCOLD;
+  const W = el.clientWidth || 220, H = 40;
+  const x = d3.scalePoint(rows.map((r) => r.time), [4, W - 4]);
+  const y = d3.scaleLinear([C.tMin - 2, C.tMax + 2], [H - 3, 3]);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+  svg.append('rect').attr('x', 0).attr('width', W).attr('y', y(C.tMax)).attr('height', y(C.tMin) - y(C.tMax)).attr('rx', 4).attr('fill', 'var(--pa-sky-soft)');
+  svg.append('path').datum(rows).attr('fill', 'none').attr('stroke', 'var(--pa-sky-ink)').attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+    .attr('d', d3.line((d) => x(d.time), (d) => y(d.temp_f)));
+  const pts = rows.map((d) => ({x: x(d.time), y: y(d.temp_f)}));
+  const L = pts[pts.length - 1];
+  svg.append('circle').attr('cx', L.x).attr('cy', L.y).attr('r', 3).attr('fill', 'var(--pa-sky-ink)');
+  paSparkTip(el, svg, pts, (i) => [paEl('div', 'pa-tip-h', rows[i].time), paEl('div', '', `${rows[i].temp_f}°F · ${rows[i].humidity}% RH`)]);
+});
+
+dash.draw('spoil-meter', (el) => {
+  el.replaceChildren();
+  const g = dash.data('spoilage');
+  if (g.status !== 'ok') return;
+  const r = g.data[0], max = window.paSPOIL_MAX, goal = window.paSPOIL_GOAL;
+  const f = paEl('div', 'pa-meter-fill');
+  f.style.width = Math.min(100, r.rate / max * 100) + '%';
+  if (r.rate > goal) f.style.background = 'var(--pa-rose)';
+  const gl = paEl('div', 'pa-meter-goal');
+  gl.style.left = (goal / max * 100) + '%';
+  gl.append(paEl('span', '', 'Goal ' + d3.format('.0%')(goal)));
+  el.append(f, gl);
+});
+
+/* ---------- order queue ---------- */
+window.paOrderMatch = (o) => {
+  const p = dash.params();
+  const st = p.status || '';
+  const q = String(p.q || '').toLowerCase().trim();
+  const ev = p.event || '';
+  return (!st || o.status === st) && (!ev || o.event_type === ev) &&
+    (!q || [o.id, o.customer, o.event_type, o.ingredients, o.window].join(' ').toLowerCase().includes(q));
+};
+const STATUS_CLS = {'Assembling': 's-assembling', 'Driver Dispatched': 's-dispatched', 'Watering/Cooling': 's-cooling'};
+const STATUS_IC = {'Assembling': 'scissors', 'Driver Dispatched': 'truck', 'Watering/Cooling': 'droplet'};
+const evClass = (t) => /bridal|wedding|bouton/i.test(t) ? 'is-bridal' : /sympathy|funeral/i.test(t) ? 'is-sympathy' : /subscription/i.test(t) ? 'is-sub' : /mother/i.test(t) ? 'is-mom' : '';
+dash.draw('queue', (tb) => {
+  tb.replaceChildren();
+  const g = dash.data('orders');
+  if (g.status !== 'ok') return;
+  const st = dash.params().status || '';
+  for (const o of g.data.filter(paOrderMatch)) {
+    const tr = document.createElement('tr');
+    tr.dataset.key = o.id;
+    const c1 = paEl('td', 'pa-oid pa-hide-lg', o.id);
+    const c2 = paEl('td', 'pa-cust', o.customer);
+    const c3 = paEl('td');
+    c3.append(paEl('span', 'pa-ev ' + evClass(o.event_type), o.event_type));
+    const c4 = paEl('td', 'pa-win-cell pa-hide-sm', o.window);
+    const c5 = paEl('td', 'pa-ing pa-hide-md', o.ingredients);
+    const c6 = paEl('td');
+    const b = paEl('button', 'pa-tag ' + (STATUS_CLS[o.status] || '') + (st === o.status ? ' is-on' : ''));
+    b.type = 'button';
+    b.dataset.status = o.status;
+    b.title = st === o.status ? 'Clear status filter' : 'Show only ' + o.status;
+    b.append(paIcon(STATUS_IC[o.status] || 'clock'), document.createTextNode(o.status));
+    c6.append(b);
+    tr.append(c1, c2, c3, c4, c5, c6);
+    tb.append(tr);
+  }
+});
+
+/* ---------- weekly chart ---------- */
+dash.draw('weekly-chart', (el) => {
+  el.replaceChildren();
+  const g = dash.data('weekly');
+  if (g.status !== 'ok') return;
+  const p = dash.params();
+  const metric = p.metric === 'deliveries' ? 'deliveries' : 'revenue';
+  const series = [
+    {key: 'walkin_' + metric, name: 'Retail walk-ins', color: 'var(--pa-forest-2)', on: p.hide_walkin !== true},
+    {key: 'event_' + metric, name: 'Event bookings', color: 'var(--pa-rose)', on: p.hide_event !== true},
+  ].filter((s) => s.on);
+  const rows = g.data.map((r) => ({...r, date: new Date(r.day)}));
+  const fmtV = metric === 'revenue' ? FMT.money0 : FMT.int;
+  const W = el.clientWidth || 600, H = 250;
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+  const maxV = d3.max(rows, (r) => d3.max(series, (s) => Number(r[s.key]))) || 1;
+  const y = d3.scaleLinear([0, maxV * 1.08], [H - 28, 10]).nice();
+  const ticks = y.ticks(5);
+  const tg = svg.append('g');
+  const tl = tg.selectAll('text').data(ticks).join('text').attr('font-size', 11).attr('fill', 'var(--pa-faint)').attr('text-anchor', 'end').attr('dy', '0.32em')
+    .text((d) => metric === 'revenue' ? d3.format('$.2~s')(d) : d3.format(',')(d));
+  let mL = 0;
+  tl.each(function () { mL = Math.max(mL, this.getComputedTextLength()); });
+  mL += 12;
+  tl.attr('x', mL - 8).attr('y', (d) => y(d));
+  svg.insert('g', ':first-child').selectAll('line').data(ticks).join('line')
+    .attr('x1', mL).attr('x2', W).attr('y1', (d) => y(d)).attr('y2', (d) => y(d))
+    .attr('stroke', (d) => d === 0 ? '#D9CFBF' : '#EFE8DC').attr('stroke-width', 1);
+  const x0 = d3.scaleBand(rows.map((r) => r.day), [mL, W]).paddingInner(0.3).paddingOuter(0.12);
+  const x1 = d3.scaleBand(series.map((s) => s.key), [0, x0.bandwidth()]).padding(0.12);
+  const barW = Math.min(32, x1.bandwidth());
+  const off = (x1.bandwidth() - barW) / 2;
+  const fd = d3.utcFormat('%a'), fdn = d3.utcFormat('%-d'), fFull = d3.utcFormat('%A, %b %-d');
+  const last = rows[rows.length - 1].day;
+  const grp = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (d) => `translate(${x0(d.day)},0)`);
+  const hl = grp.append('rect').attr('x', -6).attr('width', x0.bandwidth() + 12).attr('y', 4).attr('height', H - 30).attr('rx', 8).attr('fill', 'var(--pa-cream)').attr('opacity', (d) => d.day === last ? 1 : 0);
+  grp.selectAll('rect.bar').data((d) => series.map((s) => ({s, v: Number(d[s.key])}))).join('rect').attr('class', 'bar')
+    .attr('x', (d) => x1(d.s.key) + off).attr('width', barW)
+    .attr('y', (d) => y(d.v)).attr('height', (d) => y(0) - y(d.v)).attr('rx', 4).attr('fill', (d) => d.s.color);
+  grp.append('text').attr('x', x0.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 11)
+    .attr('fill', (d) => d.day === last ? 'var(--pa-ink)' : 'var(--pa-muted)').attr('font-weight', (d) => d.day === last ? 600 : 400)
+    .text((d) => (d.day === last ? 'Today' : fd(d.date)) + (x0.bandwidth() > 44 ? ' ' + fdn(d.date) : ''));
+  const tip = paEl('div', 'pa-tip');
+  tip.style.display = 'none';
+  el.append(tip);
+  grp.append('rect').attr('x', -6).attr('width', x0.bandwidth() + 12).attr('y', 0).attr('height', H).attr('fill', 'transparent')
+    .on('pointerenter', function (ev, d) {
+      hl.attr('opacity', (h) => h.day === d.day ? 1 : 0);
+      grp.selectAll('rect.bar').attr('opacity', function () { return d3.select(this.parentNode).datum().day === d.day ? 1 : 0.45; });
+      const parts = [paEl('div', 'pa-tip-h', fFull(d.date))];
+      for (const s of series) {
+        const r = paEl('div', 'pa-tip-r');
+        const sw = paEl('span', 'pa-sw');
+        sw.style.background = s.color;
+        r.append(sw, document.createTextNode(s.name), paEl('b', '', fmtV(Number(d[s.key]))));
+        parts.push(r);
+      }
+      if (series.length > 1) {
+        const r = paEl('div', 'pa-tip-r');
+        r.style.borderTop = '1px solid var(--pa-line-2)';
+        r.style.marginTop = '4px';
+        r.style.paddingTop = '4px';
+        r.append(document.createTextNode('Total'), paEl('b', '', fmtV(d3.sum(series, (s) => Number(d[s.key])))));
+        parts.push(r);
+      }
+      tip.replaceChildren(...parts);
+      tip.style.display = 'block';
+      const cx = x0(d.day) + x0.bandwidth() / 2, tw = tip.offsetWidth;
+      tip.style.left = Math.max(0, Math.min(W - tw, cx - tw / 2)) + 'px';
+      tip.style.top = '6px';
+    })
+    .on('pointerleave', () => {
+      tip.style.display = 'none';
+      hl.attr('opacity', (h) => h.day === last ? 1 : 0);
+      grp.selectAll('rect.bar').attr('opacity', 1);
+    });
+});
+
+/* ---------- inventory ---------- */
+const COND = {'Low stock': ['c-low', 'alert'], 'Peak soon': ['c-peak', 'flower'], 'Short vase life': ['c-short', 'hourglass'], 'Optimal': ['c-ok', 'check']};
+dash.draw('inventory', (ul) => {
+  ul.replaceChildren();
+  const g = dash.data('inventory');
+  if (g.status !== 'ok') return;
+  const all = dash.params().inv === 'all';
+  const rows = g.data.filter((r) => all || r.condition !== 'Optimal');
+  for (const r of rows) {
+    const [cls, ic] = COND[r.condition] || ['c-peak', 'alert'];
+    const li = paEl('li', 'pa-inv-i ' + cls);
+    const icw = paEl('div', 'pa-inv-ic');
+    icw.append(paIcon(ic, 'pa-ic'));
+    const body = paEl('div');
+    const top = paEl('div', 'pa-inv-top');
+    const nm = paEl('div', 'pa-inv-name', r.stem);
+    nm.append(paEl('span', 'pa-inv-var', r.variety));
+    top.append(nm, paEl('span', 'pa-cond', r.condition));
+    const d = paEl('div', 'pa-inv-d', r.detail);
+    const bar = paEl('div', 'pa-inv-bar');
+    const track = paEl('div', 'pa-inv-track');
+    const fill = paEl('div', 'pa-inv-fill');
+    fill.style.width = Math.min(100, r.on_hand / r.par * 100) + '%';
+    track.append(fill);
+    bar.append(track, paEl('span', '', `${FMT.int(r.on_hand)} / ${FMT.int(r.par)} par`));
+    body.append(top, d, bar);
+    li.append(icw, body);
+    ul.append(li);
+  }
+});
+dash.draw('waste-stem', (sel) => {
+  const g = dash.data('inventory');
+  const keep = sel.value;
+  sel.replaceChildren(...(g.status === 'ok' ? g.data : []).map((r) => new Option(`${r.stem} (${r.variety})`, r.stem)));
+  if (keep) sel.value = keep;
+});
+
+/* ---------- notifications ---------- */
+dash.draw('notif-list', (ul) => {
+  ul.replaceChildren();
+  const g = dash.data('notifications');
+  if (g.status !== 'ok') return;
+  for (const n of g.data) {
+    const li = paEl('li', 'pa-notif' + (n.unread ? ' is-unread' : ''));
+    const t = paEl('div');
+    t.append(paEl('div', 'pa-notif-t', n.title), paEl('div', 'pa-notif-d', n.detail));
+    li.append(paEl('span', 'pa-notif-dot'), t, paEl('span', 'pa-notif-time', n.time));
+    ul.append(li);
+  }
+});
+
+/* ---------- deliveries ---------- */
+window.paSTUDIO = {x: 10, y: 82};
+dash.draw('route-map', (el) => {
+  el.replaceChildren();
+  const g = dash.data('deliveries');
+  if (g.status !== 'ok') return;
+  const W = el.clientWidth || 360, H = Math.max(190, Math.min(240, W * 0.55));
+  const sx = (v) => 14 + v / 100 * (W - 28), sy = (v) => 14 + v / 100 * (H - 28);
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+  // stylised streets (decoration)
+  svg.append('path').attr('d', `M0 ${H * .62} C ${W * .3} ${H * .5}, ${W * .55} ${H * .95}, ${W} ${H * .78}`).attr('fill', 'none').attr('stroke', '#CFDCE0').attr('stroke-width', 14).attr('stroke-linecap', 'round');
+  svg.append('ellipse').attr('cx', W * .45).attr('cy', H * .3).attr('rx', W * .12).attr('ry', H * .14).attr('fill', '#DCE6D2');
+  const st = svg.append('g').attr('stroke', '#FFFFFF').attr('stroke-width', 5).attr('stroke-linecap', 'round');
+  [.2, .45, .72].forEach((f) => st.append('line').attr('x1', 0).attr('x2', W).attr('y1', H * f).attr('y2', H * f + 18));
+  [.18, .5, .8].forEach((f) => st.append('line').attr('y1', 0).attr('y2', H).attr('x1', W * f).attr('x2', W * f - 14));
+  const S = window.paSTUDIO;
+  const stops = g.data;
+  const pts = [{x: sx(S.x), y: sy(S.y)}, ...stops.map((d) => ({x: sx(d.x), y: sy(d.y)}))];
+  svg.append('path').attr('d', d3.line((d) => d.x, (d) => d.y).curve(d3.curveCatmullRom.alpha(0.5))(pts))
+    .attr('fill', 'none').attr('stroke', 'var(--pa-forest-2)').attr('stroke-width', 2.5).attr('stroke-dasharray', '6 5').attr('opacity', .85);
+  const home = svg.append('g').attr('transform', `translate(${pts[0].x},${pts[0].y})`);
+  home.append('rect').attr('x', -11).attr('y', -11).attr('width', 22).attr('height', 22).attr('rx', 6).attr('fill', 'var(--pa-rose-soft)').attr('stroke', 'var(--pa-rose-ink)').attr('stroke-width', 1.5);
+  home.append('g').attr('transform', 'translate(-8,-8) scale(.667)').attr('fill', 'none').attr('stroke', 'var(--pa-rose-ink)').attr('stroke-width', 2).html(PA_ICONS.flower);
+  home.append('text').attr('x', 15).attr('y', 4).attr('font-size', 11).attr('font-weight', 600).attr('fill', 'var(--pa-rose-ink)').text('Shop');
+  const sel = window.paStop;
+  const pin = svg.append('g').selectAll('g').data(stops).join('g').attr('class', 'pa-pin')
+    .attr('transform', (d) => `translate(${sx(d.x)},${sy(d.y)})`)
+    .on('click', (ev, d) => { window.paStop = d.stop; dash.draw('route-map'); dash.draw('stops'); });
+  pin.append('circle').attr('class', 'ring').attr('r', (d) => d.stop === sel ? 17 : 0).attr('fill', 'rgba(61,97,80,.16)');
+  pin.append('circle').attr('r', 11).attr('fill', (d) => d.stop === sel ? 'var(--pa-forest)' : '#FFFCF7').attr('stroke', 'var(--pa-forest)').attr('stroke-width', 2);
+  pin.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em').attr('font-size', 11).attr('font-weight', 700)
+    .attr('fill', (d) => d.stop === sel ? '#FBF7F0' : 'var(--pa-forest)').text((d) => d.stop);
+  const sd = stops.find((d) => d.stop === sel);
+  if (sd) {
+    const lab = svg.append('g');
+    const t = lab.append('text').attr('font-size', 11).attr('font-weight', 600).attr('fill', 'var(--pa-ink)').text(`${sd.eta} · ${sd.customer}`);
+    const tw = t.node().getComputedTextLength();
+    let lx = sx(sd.x) - (tw + 12) / 2, ly = sy(sd.y) + 18;
+    lx = Math.max(4, Math.min(W - tw - 16, lx));
+    if (ly + 22 > H) ly = sy(sd.y) - 40;
+    lab.insert('rect', 'text').attr('x', lx).attr('y', ly - 2).attr('width', tw + 12).attr('height', 20).attr('rx', 6).attr('fill', '#FFFCF7').attr('stroke', 'var(--pa-line)');
+    t.attr('x', lx + 6).attr('y', ly + 12);
+  }
+});
+dash.draw('stops', (ul) => {
+  ul.replaceChildren();
+  const g = dash.data('deliveries');
+  if (g.status !== 'ok') return;
+  for (const d of g.data) {
+    const li = document.createElement('li');
+    const b = paEl('button', 'pa-stop' + (d.stop === window.paStop ? ' is-sel' : ''));
+    b.type = 'button';
+    b.dataset.stop = String(d.stop);
+    const n = paEl('span', 'pa-stop-n', String(d.stop));
+    const body = paEl('div');
+    const top = paEl('div', 'pa-stop-top');
+    const eta = paEl('span', 'pa-eta');
+    eta.append(paIcon('clock'), document.createTextNode(d.eta));
+    top.append(paEl('span', 'pa-stop-name', d.customer), eta);
+    const meta = paEl('div', 'pa-stop-meta');
+    const dr = paEl('span', 'pa-mini');
+    dr.append(paIcon('truck'), document.createTextNode(`${d.driver} · ${d.vehicle}`));
+    const nt = paEl('span', 'pa-mini note');
+    nt.append(paIcon('note'), document.createTextNode(d.note));
+    meta.append(paEl('span', 'pa-mini st', d.status), dr, nt);
+    body.append(top, paEl('div', 'pa-stop-addr', d.address), meta);
+    b.append(n, body);
+    li.append(b);
+    ul.append(li);
+  }
+});
+</script>
+
+<script>
+/* ---------- controls: listen and set state only ---------- */
+const $$ = (s) => document.querySelectorAll(s);
+const pa = () => document.querySelectorAll('.pa');
+
+$$('.pa-collapse').forEach((b) => b.addEventListener('click', () => {
+  pa().forEach((p) => p.classList.toggle('is-collapsed'));
+  const c = document.querySelector('.pa.is-collapsed') != null;
+  $$('.pa-collapse').forEach((x) => { x.setAttribute('aria-expanded', String(!c)); x.setAttribute('aria-label', c ? 'Expand sidebar' : 'Collapse sidebar'); });
+}));
+
+let toastTimer = null;
+const toast = (id) => {
+  $$('.pa-toast').forEach((t) => { t.hidden = t.dataset.toastId !== id; });
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $$('.pa-toast').forEach((t) => { t.hidden = true; }), 3200);
+};
+
+$$('.pa-nav-btn').forEach((b) => b.addEventListener('click', () => {
+  const target = b.dataset.target;
+  if (!target) { toast('soon'); return; }
+  $$('.pa-nav-btn').forEach((x) => x.removeAttribute('aria-current'));
+  b.setAttribute('aria-current', 'page');
+  dash.setParams({event: b.dataset.filter || null});
+  document.querySelectorAll('#' + target).forEach((el) => { el.scrollIntoView({behavior: 'smooth', block: 'start'}); dash.setLink(target); });
+}));
+$$('[data-soon]').forEach((b) => b.addEventListener('click', () => toast('soon')));
+
+$$('.pa-q').forEach((inp) => {
+  inp.addEventListener('input', () => dash.setParams({q: inp.value.trim() || null}));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement && document.activeElement.tagName)) {
+    const q = document.querySelector('.pa-q');
+    if (q) { e.preventDefault(); q.focus(); }
+  }
+  if (e.key === 'Escape') {
+    $$('.pa-modal').forEach((m) => { m.hidden = true; });
+    $$('.pa-pop').forEach((p) => { p.hidden = true; });
+    $$('.pa-bell').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  }
+});
+
+$$('.pa-qchip').forEach((b) => b.addEventListener('click', () => dash.setParams({status: b.dataset.status || null, event: null})));
+$$('.pa-table').forEach((t) => t.addEventListener('click', (e) => {
+  const tag = e.target.closest('.pa-tag');
+  if (!tag) return;
+  const cur = dash.params().status || '';
+  dash.setParams({status: cur === tag.dataset.status ? null : tag.dataset.status});
+}));
+$$('.pa-q-clear').forEach((b) => b.addEventListener('click', () => {
+  dash.setParams({status: null, q: null, event: null});
+  $$('.pa-q').forEach((q) => { q.value = ''; });
+}));
+
+$$('.pa-metric').forEach((b) => b.addEventListener('click', () => dash.setParams({metric: b.dataset.metric})));
+$$('.pa-legbtn').forEach((b) => b.addEventListener('click', () => {
+  const p = dash.params();
+  const key = 'hide_' + b.dataset.series;
+  const other = 'hide_' + (b.dataset.series === 'walkin' ? 'event' : 'walkin');
+  if (p[key] !== true && p[other] === true) return; // keep one series visible
+  dash.setParams({[key]: p[key] === true ? null : true});
+}));
+$$('.pa-invf').forEach((b) => b.addEventListener('click', () => dash.setParams({inv: b.dataset.inv === 'all' ? 'all' : null})));
+
+$$('.pa-stops').forEach((ul) => ul.addEventListener('click', (e) => {
+  const b = e.target.closest('.pa-stop');
+  if (!b) return;
+  window.paStop = Number(b.dataset.stop);
+  dash.draw('route-map');
+  dash.draw('stops');
+}));
+
+$$('.pa-bell').forEach((b) => b.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = b.getAttribute('aria-expanded') !== 'true';
+  b.setAttribute('aria-expanded', String(open));
+  $$('.pa-pop').forEach((p) => { p.hidden = !open; });
+}));
+$$('.pa-pop').forEach((p) => p.addEventListener('click', (e) => e.stopPropagation()));
+document.addEventListener('click', () => {
+  $$('.pa-pop').forEach((p) => { p.hidden = true; });
+  $$('.pa-bell').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+});
+
+$$('.pa-open').forEach((b) => b.addEventListener('click', (e) => {
+  e.stopPropagation();
+  $$('.pa-modal').forEach((m) => { m.hidden = m.dataset.modalId !== b.dataset.modal; });
+}));
+$$('.pa-modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) m.hidden = true; }));
+$$('.pa-close').forEach((b) => b.addEventListener('click', () => $$('.pa-modal').forEach((m) => { m.hidden = true; })));
+$$('.pa-save').forEach((b) => b.addEventListener('click', () => {
+  $$('.pa-modal').forEach((m) => { m.hidden = true; });
+  toast(b.dataset.toast);
+}));
+
+dash.onData(() => {
+  const p = dash.params();
+  const st = p.status || '';
+  $$('.pa-qchip').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.status || '') === st)));
+  const metric = p.metric === 'deliveries' ? 'deliveries' : 'revenue';
+  $$('.pa-metric').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.metric === metric)));
+  $$('.pa-tots-rev').forEach((e) => { e.hidden = metric !== 'revenue'; });
+  $$('.pa-tots-del').forEach((e) => { e.hidden = metric !== 'deliveries'; });
+  $$('.pa-legbtn').forEach((b) => b.setAttribute('aria-pressed', String(p['hide_' + b.dataset.series] !== true)));
+  const inv = p.inv === 'all' ? 'all' : 'attention';
+  $$('.pa-invf').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.inv === inv)));
+  $$('.pa-q').forEach((q) => { if (q !== document.activeElement) q.value = p.q || ''; });
+  const g = dash.data('orders');
+  const none = g.status === 'ok' && !g.data.some(window.paOrderMatch);
+  $$('.pa-q-empty').forEach((e) => { e.hidden = !none; });
+});
+</script>
+
+</div>
+<script>dash._start();</script>
+</body>
+</html>
