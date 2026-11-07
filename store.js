@@ -23,6 +23,21 @@ const GIFT_ADDONS = {
     { label: "Greeting card",    add: 50 }
   ]
 };
+// Looks for bouquets: each choice has a photo so customers can see how it will look.
+// To add a look, add a line here with its own photo, then it can be used below.
+const LOOKS = {
+  white:    { label: "Classic white wrap",       image: "images/classic-red-roses.jpg",    add: 0 },
+  cream:    { label: "Cream wrap, plum ribbon",  image: "images/red-and-blush-roses.jpg",  add: 0 },
+  pink:     { label: "Soft pink wrap",           image: "images/pink-blush-bouquet.jpg",   add: 0 },
+  burlap:   { label: "Dusty pink & burlap wrap", image: "images/red-roses-blush-wrap.jpg", add: 150 },
+  handtied: { label: "Hand-tied, pink ribbon",   image: "images/orchid-luxe-bouquet.jpg",  add: 0 }
+};
+// lookOptions("pink") = all looks, with the pink one first (selected by default)
+const lookOptions = first => ({
+  name: "Look & wrapping", type: "one",
+  choices: [LOOKS[first], ...Object.keys(LOOKS).filter(k => k !== first).map(k => LOOKS[k])]
+});
+
 const RIBBON = {
   name: "Extras", type: "many", choices: [
     { label: "Printed ribbon with message", add: 200 }
@@ -52,6 +67,7 @@ const PRODUCTS = [
   { cat: "Bouquet", name: "Pink Blush Bouquet", price: 1200, image: "images/pink-blush-bouquet.jpg", badge: "",
     desc: "Soft pink blooms wrapped in a romantic blush palette. Sweet, gentle and perfect for someone special.",
     options: [
+      lookOptions("pink"),
       { name: "Size", type: "one", choices: [
         { label: "Small (6 stems)", add: 0 },
         { label: "Medium (12 stems)", add: 600 },
@@ -62,6 +78,7 @@ const PRODUCTS = [
   { cat: "Bouquet", name: "Classic Red Roses", price: 1500, image: "images/classic-red-roses.jpg", badge: "Bestseller",
     desc: "Timeless red roses, hand-tied and wrapped. The classic way to say I love you.",
     options: [
+      lookOptions("white"),
       { name: "Size", type: "one", choices: [
         { label: "6 roses", add: 0 },
         { label: "12 roses", add: 700 },
@@ -72,6 +89,7 @@ const PRODUCTS = [
   { cat: "Bouquet", name: "Red & Blush Roses", price: 1600, image: "images/red-and-blush-roses.jpg", badge: "",
     desc: "Deep red and blush roses arranged together for a bouquet that is bold and tender at once.",
     options: [
+      lookOptions("cream"),
       { name: "Size", type: "one", choices: [
         { label: "6 roses", add: 0 },
         { label: "12 roses", add: 700 },
@@ -82,6 +100,7 @@ const PRODUCTS = [
   { cat: "Bouquet", name: "Orchid Luxe Bouquet", price: 2500, image: "images/orchid-luxe-bouquet.jpg", badge: "",
     desc: "Elegant orchids styled into a luxe bouquet. Made for milestones and grand gestures.",
     options: [
+      lookOptions("handtied"),
       { name: "Orchid color", type: "one", choices: [
         { label: "Purple", add: 0 },
         { label: "White", add: 300 },
@@ -147,7 +166,7 @@ const pick = (group, choice) => `${group.name}: ${choice.label}`;
 function priceLabel(p) {
   if (p.price == null) return "Message for price";
   const extra = (p.options || []).some(g => g.choices.some(c => c.add));
-  return (extra ? "From " : "") + peso(p.price);
+  return (extra ? "From " : "") + peso(unitPrice(p, defaultPicks(p)));
 }
 // Default choices: the first option of every "pick one" group
 function defaultPicks(p) {
