@@ -167,6 +167,11 @@ header{background:var(--wine);color:#FBE7EC}
 .cart-foot .btn{justify-content:center;border:none;cursor:pointer;font-family:inherit}
 .cart-foot .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .cart-note{margin:0;font-size:13px;line-height:1.5;color:var(--wine-soft)}
+.cart-item{align-items:flex-start}
+.cart-opts{font-size:13px;line-height:1.45;color:var(--wine-soft)}
+.cart-price{font-size:15px;font-weight:700;color:var(--green)}
+.cart-total{margin:0;display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:15px}
+.cart-total strong{font-size:18px;text-align:right}
 /* shop page */
 .page-head{padding-top:72px;padding-bottom:88px;display:flex;flex-direction:column;gap:20px;position:relative}
 .page-head h1{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(48px,6.5vw,88px);line-height:1;color:var(--cream)}
@@ -236,6 +241,21 @@ header{background:var(--wine);color:#FBE7EC}
 .qv-qty span{min-width:20px;text-align:center;font-weight:700}
 .qv-notes{margin:8px 0 0;padding:16px 0 0;border-top:1px solid var(--blush-2);list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5;color:var(--wine-soft)}
 .qv-notes li::before{content:"\273F  ";color:var(--rose)}
+.qv-grid{align-items:start}
+.qv-photo{position:sticky;top:0}
+.qv-options{display:flex;flex-direction:column;gap:18px}
+.opt-group{border:0;margin:0;padding:0;min-width:0}
+.opt-group legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green)}
+.opt-group legend small{font-weight:500;letter-spacing:0;text-transform:none;color:var(--wine-soft)}
+.opt-list{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;border:1px solid var(--pink-2);background:#fff;font-size:15px;cursor:pointer}
+.opt input{margin:0;accent-color:var(--rose)}
+.opt span{flex:1}
+.opt em{font-style:normal;font-size:14px;font-weight:700;color:var(--green)}
+.opt:has(input:checked){border-color:var(--rose);background:var(--blush-2)}
+.qv-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--blush-2);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--wine-soft)}
+.qv-total .price{font-size:24px;letter-spacing:0}
+@media (max-width:720px){.qv-photo{position:static}}
 .qv-close{position:absolute;top:12px;right:12px;z-index:2;width:40px;height:40px;border-radius:999px;border:0;background:#fff;color:var(--wine);font-size:24px;line-height:1;cursor:pointer}
 @media (max-width:720px){
   .qv-grid{grid-template-columns:1fr}
@@ -360,8 +380,9 @@ header{background:var(--wine);color:#FBE7EC}
     <div class="qv-info">
       <span class="p-cat" id="qvCat"></span>
       <h2 id="qvName"></h2>
-      <span class="price" id="qvPrice"></span>
       <p id="qvDesc"></p>
+      <div class="qv-options" id="qvOptions"></div>
+      <div class="qv-total"><span>Total</span><span class="price" id="qvPrice"></span></div>
       <div class="qv-buy">
         <div class="qty qv-qty">
           <button type="button" id="qvDec" aria-label="Fewer">&minus;</button>
@@ -445,35 +466,13 @@ header{background:var(--wine);color:#FBE7EC}
   </div>
 </aside>
 
+<script src="store.js"></script>
 <script>
-  // ===== EDIT YOUR PRODUCTS HERE =====
-  // image: path or URL to the photo (leave "" to show a placeholder)
-  // badge: short label on the photo, e.g. "Bestseller" or "New" (leave "" for none)
-  // desc:  shown when a customer taps the item
-  const PRODUCTS = [
-    { cat: "Gift set", name: "Sunflower Love Bear",        price: "Message for price", image: "images/sunflower-teddy-bear.jpg",
-      badge: "Bestseller", desc: "Bright sunflowers paired with a soft teddy bear. A cheerful gift for birthdays, anniversaries or just because." },
-    { cat: "Bouquet",  name: "Pink Blush Bouquet",         price: "Message for price", image: "images/pink-blush-bouquet.jpg",
-      badge: "", desc: "Soft pink blooms wrapped in a romantic blush palette. Sweet, gentle and perfect for someone special." },
-    { cat: "Bouquet",  name: "Classic Red Roses",          price: "Message for price", image: "images/classic-red-roses.jpg",
-      badge: "Bestseller", desc: "Timeless red roses, hand-tied and wrapped. The classic way to say I love you." },
-    { cat: "Bouquet",  name: "Red & Blush Roses",          price: "Message for price", image: "images/red-and-blush-roses.jpg",
-      badge: "", desc: "Deep red and blush roses arranged together for a bouquet that is bold and tender at once." },
-    { cat: "Bouquet",  name: "Orchid Luxe Bouquet",        price: "Message for price", image: "images/orchid-luxe-bouquet.jpg",
-      badge: "", desc: "Elegant orchids styled into a luxe bouquet. Made for milestones and grand gestures." },
-    { cat: "Standee",  name: "Grand Celebration Standee",  price: "Message for price", image: "images/grand-celebration-standee.jpg",
-      badge: "", desc: "A tall floral standee for openings, launches and big celebrations. Made to stand out." },
-    { cat: "Sympathy", name: "White Daisy Wreath",         price: "Message for price", image: "images/white-daisy-wreath.jpg",
-      badge: "", desc: "A serene wreath of white daisies to honor a loved one and offer comfort to the family." },
-    { cat: "Sympathy", name: "Orchid & Anthurium Tribute", price: "Message for price", image: "images/orchid-and-anthurium-tribute.jpg",
-      badge: "", desc: "Graceful orchids and anthuriums arranged as a dignified tribute of sympathy and remembrance." }
-  ];
-  const TONES = ["#F6C9D4", "#F3DCC8", "#E9B4C3", "#DCE8DF"];
-  const ICON = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
-  const media = p => p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `${ICON}[Catalog photo]`;
+  // Products, prices and options are edited in store.js
 
-  const grid = document.getElementById("products");
+  const grid = $("products");
   PRODUCTS.forEach((p, i) => {
+    const hasOptions = (p.options || []).length > 0;
     const card = document.createElement("article");
     card.className = "product card";
     card.dataset.cat = p.cat;
@@ -485,8 +484,10 @@ header{background:var(--wine);color:#FBE7EC}
       <div class="p-body">
         <span class="p-cat">${p.cat}</span>
         <h3><button type="button" class="p-name" data-view="${i}">${p.name}</button></h3>
-        <span class="price">${p.price}</span>
-        <button type="button" class="btn btn-dark btn-add" data-i="${i}">Add to cart</button>
+        <span class="price">${priceLabel(p)}</span>
+        ${hasOptions
+          ? `<button type="button" class="btn btn-dark btn-add" data-view="${i}">Choose options</button>`
+          : `<button type="button" class="btn btn-dark btn-add" data-i="${i}">Add to cart</button>`}
       </div>`;
     grid.appendChild(card);
   });
@@ -496,21 +497,19 @@ header{background:var(--wine);color:#FBE7EC}
   empty.innerHTML = "No arrangements match your search.<br>Try another word or category.";
   grid.appendChild(empty);
 
-  // ===== CATEGORY FILTERS =====
-  // Built from the categories used in PRODUCTS, so new categories appear automatically
+  // ===== CATEGORY FILTERS, SEARCH, SORT =====
+  // Categories are built from PRODUCTS, so new categories appear automatically
   const cats = ["All", ...new Set(PRODUCTS.map(p => p.cat))];
-  const filters = document.getElementById("filters");
+  const filters = $("filters");
   filters.innerHTML = cats.map(c => {
     const n = c === "All" ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === c).length;
     return `<button type="button" class="chip" data-cat="${c}" aria-pressed="false">${c}<span class="n">${n}</span></button>`;
   }).join("");
 
   let currentCat = "All";
-
-  // Category + search + sort, all applied together
   function refresh() {
-    const q = document.getElementById("search").value.trim().toLowerCase();
-    const sort = document.getElementById("sort").value;
+    const q = $("search").value.trim().toLowerCase();
+    const sort = $("sort").value;
     const ordered = [...cards];
     if (sort !== "featured") {
       ordered.sort((a, b) => PRODUCTS[a.dataset.i].name.localeCompare(PRODUCTS[b.dataset.i].name));
@@ -519,191 +518,84 @@ header{background:var(--wine);color:#FBE7EC}
     let shown = 0;
     ordered.forEach(card => {
       const p = PRODUCTS[card.dataset.i];
-      const match = (currentCat === "All" || p.cat === currentCat) &&
-        (!q || `${p.name} ${p.cat} ${p.desc}`.toLowerCase().includes(q));
+      const words = [p.name, p.cat, p.desc, ...(p.options || []).flatMap(g => g.choices.map(c => c.label))].join(" ").toLowerCase();
+      const match = (currentCat === "All" || p.cat === currentCat) && (!q || words.includes(q));
       card.hidden = !match;
       if (match) shown++;
       grid.insertBefore(card, empty);
     });
     empty.hidden = shown > 0;
     filters.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.cat === currentCat));
-    document.getElementById("resultCount").textContent = `Showing ${shown} ${shown === 1 ? "arrangement" : "arrangements"}`;
+    $("resultCount").textContent = `Showing ${shown} ${shown === 1 ? "arrangement" : "arrangements"}`;
   }
-
   function applyFilter(cat) {
     currentCat = cats.includes(cat) ? cat : "All";
     refresh();
   }
-
   filters.addEventListener("click", e => {
     const b = e.target.closest(".chip");
     if (b) applyFilter(b.dataset.cat);
   });
-  document.getElementById("search").addEventListener("input", refresh);
-  document.getElementById("sort").addEventListener("change", refresh);
+  $("search").addEventListener("input", refresh);
+  $("sort").addEventListener("change", refresh);
+
+  const params = new URLSearchParams(location.search);
   // Allow links like shop.html?cat=Bouquet
-  applyFilter(new URLSearchParams(location.search).get("cat") || "All");
-
-  // ===== CART =====
-  // TESTING: every branch sends to the test profile.
-  // Real links to restore after testing:
-  //   Cavite:    https://www.facebook.com/groups/351630443651243/user/100063697824285/
-  //   Imus:      https://www.facebook.com/groups/351630443651243/user/100078109568096/
-  //   Boni-EDSA: https://www.facebook.com/groups/351630443651243/user/61555185975524/
-  const TEST_LINK = "https://www.facebook.com/phoebekate.tapales";
-  const BRANCH_LINKS = {
-    "Cavite": TEST_LINK,
-    "Imus": TEST_LINK,
-    "Boni-EDSA": TEST_LINK
-  };
-  const $ = id => document.getElementById(id);
-  let cart = {}; // product name -> quantity
-  try { cart = JSON.parse(localStorage.getItem("gayles-cart")) || {}; } catch (e) {}
-
-  function saveCart() {
-    try { localStorage.setItem("gayles-cart", JSON.stringify(cart)); } catch (e) {}
-  }
-
-  function renderCart() {
-    const names = Object.keys(cart).filter(n => PRODUCTS.some(p => p.name === n));
-    $("cartCount").textContent = names.reduce((sum, n) => sum + cart[n], 0);
-    $("cartItems").innerHTML = names.length ? names.map(n => {
-      const p = PRODUCTS.find(p => p.name === n);
-      return `<div class="cart-item">
-        <img src="${p.image}" alt="">
-        <div class="info">
-          <strong>${p.name}</strong>
-          <div class="qty">
-            <button type="button" data-dec="${n}" aria-label="Fewer">&minus;</button>
-            <span>${cart[n]}</span>
-            <button type="button" data-inc="${n}" aria-label="More">+</button>
-          </div>
-          <button type="button" class="cart-remove" data-rm="${n}">Remove</button>
-        </div>
-      </div>`;
-    }).join("") : '<p class="cart-empty">Your cart is empty.<br>Add an arrangement from the catalog.</p>';
-    $("cartCheckout").disabled = !names.length;
-    if (!names.length) showStep("cart");
-  }
-
-  // "cart" = review items, "checkout" = fill out the order form
-  function showStep(step) {
-    const checkout = step === "checkout";
-    $("cartTitle").textContent = checkout ? "Checkout" : "Your cart";
-    $("cartItems").hidden = checkout;
-    $("checkoutForm").hidden = !checkout;
-    $("cartCheckout").hidden = checkout;
-    $("cartSend").hidden = !checkout;
-    $("cartNote").textContent = checkout
-      ? "We'll copy your order. Paste it in the branch's Facebook chat to confirm the price."
-      : "Prices are confirmed by the branch in the Facebook chat.";
-    $("cartBody").scrollTop = 0;
-  }
-
-  function openCart(open) {
-    $("cart").classList.toggle("open", open);
-    $("cartOverlay").classList.toggle("open", open);
-    $("cart").setAttribute("aria-hidden", !open);
-    document.body.style.overflow = open ? "hidden" : "";
-    if (open) showStep("cart");
-  }
-
-  function addToCart(i, qty, btn) {
-    const name = PRODUCTS[i].name;
-    cart[name] = (cart[name] || 0) + qty;
-    saveCart(); renderCart();
-    const count = $("cartCount");
-    count.classList.remove("bump"); void count.offsetWidth; count.classList.add("bump");
-    btn.textContent = "Added ✓";
-    setTimeout(() => { btn.textContent = "Add to cart"; }, 1200);
-  }
+  applyFilter(params.get("cat") || "All");
 
   grid.addEventListener("click", e => {
     const view = e.target.closest("[data-view]");
     if (view) return openQuickView(+view.dataset.view);
     const btn = e.target.closest(".btn-add");
-    if (btn) addToCart(+btn.dataset.i, 1, btn);
+    if (btn) addToCart(+btn.dataset.i, [], 1, btn);
   });
 
-  // ===== ITEM QUICK VIEW =====
+  // ===== ITEM QUICK VIEW (with options) =====
   const qv = $("quickView");
   let qvIndex = 0, qvQty = 1;
+  const qvPicks = () => [...$("qvOptions").querySelectorAll("input:checked")].map(x => x.value);
+  function qvUpdate() {
+    const u = unitPrice(PRODUCTS[qvIndex], qvPicks());
+    $("qvQty").textContent = qvQty;
+    $("qvPrice").textContent = u == null ? "Message for price" : peso(u * qvQty);
+  }
   function openQuickView(i) {
     const p = PRODUCTS[i];
+    if (!p) return;
     qvIndex = i; qvQty = 1;
     $("qvPhoto").style.background = TONES[i % TONES.length];
     $("qvPhoto").innerHTML = media(p);
     $("qvCat").textContent = p.cat;
     $("qvName").textContent = p.name;
-    $("qvPrice").textContent = p.price;
     $("qvDesc").textContent = p.desc || "";
-    $("qvQty").textContent = qvQty;
+    $("qvOptions").innerHTML = (p.options || []).map((g, gi) => `
+      <fieldset class="opt-group">
+        <legend>${g.name}${g.type === "many" ? " <small>(optional, pick any)</small>" : ""}</legend>
+        <div class="opt-list">
+          ${g.choices.map((c, ci) => `
+            <label class="opt">
+              <input type="${g.type === "one" ? "radio" : "checkbox"}" name="opt${gi}" value="${pick(g, c)}"${g.type === "one" && ci === 0 ? " checked" : ""}>
+              <span>${c.label}</span>
+              <em>${c.add ? "+" + peso(c.add) : ""}</em>
+            </label>`).join("")}
+        </div>
+      </fieldset>`).join("");
     $("qvAdd").textContent = "Add to cart";
+    qvUpdate();
     qv.showModal();
+    qv.scrollTop = 0;
   }
+  $("qvOptions").addEventListener("change", qvUpdate);
   $("qvClose").addEventListener("click", () => qv.close());
   qv.addEventListener("click", e => { if (e.target === qv) qv.close(); }); // click outside
-  $("qvDec").addEventListener("click", () => { qvQty = Math.max(1, qvQty - 1); $("qvQty").textContent = qvQty; });
-  $("qvInc").addEventListener("click", () => { qvQty++; $("qvQty").textContent = qvQty; });
-  $("qvAdd").addEventListener("click", e => addToCart(qvIndex, qvQty, e.currentTarget));
+  $("qvDec").addEventListener("click", () => { qvQty = Math.max(1, qvQty - 1); qvUpdate(); });
+  $("qvInc").addEventListener("click", () => { qvQty++; qvUpdate(); });
+  $("qvAdd").addEventListener("click", e => addToCart(qvIndex, qvPicks(), qvQty, e.currentTarget));
 
-  $("cartItems").addEventListener("click", e => {
-    const d = e.target.dataset;
-    if (d.inc) cart[d.inc]++;
-    else if (d.dec) { if (--cart[d.dec] < 1) delete cart[d.dec]; }
-    else if (d.rm) delete cart[d.rm];
-    else return;
-    saveCart(); renderCart();
-  });
+  initCart();
 
-  $("cartOpen").addEventListener("click", () => openCart(true));
-  $("cartClose").addEventListener("click", () => openCart(false));
-  $("cartOverlay").addEventListener("click", () => openCart(false));
-  document.addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
-  $("cartCheckout").addEventListener("click", () => showStep("checkout"));
-  $("cartBack").addEventListener("click", () => showStep("cart"));
-
-  // Show the address box only for delivery
-  const form = $("checkoutForm");
-  form.addEventListener("change", e => {
-    if (e.target.name !== "method") return;
-    const delivery = e.target.value === "Delivery";
-    $("addressField").hidden = !delivery;
-    $("coAddress").required = delivery;
-  });
-
-  // Earliest date is today
-  const now = new Date();
-  $("coDate").min = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const f = Object.fromEntries(new FormData(form));
-    const branch = f.branch;
-    const date = new Date(f.date + "T00:00").toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" });
-    const lines = [
-      `Hi Gayle's Flower Shop (${branch})! I'd like to order:`,
-      ...Object.keys(cart).map(n => `- ${n} x${cart[n]}`),
-      "",
-      `Name: ${f.name}`,
-      `Mobile: ${f.phone}`,
-      f.method === "Delivery" ? `Delivery to: ${f.address}` : `Pick-up at ${branch} branch`,
-      `Date needed: ${date}`,
-      `Flower color: ${f.color}`
-    ];
-    if (f.message.trim()) lines.push(`Message: ${f.message}`);
-    const text = lines.join("\n");
-    try {
-      await navigator.clipboard.writeText(text);
-      $("cartNote").textContent = "Order copied! Paste it in the Facebook chat to confirm.";
-    } catch (e) {
-      $("cartNote").textContent = "Copy this into the Facebook chat: " + text.replace(/\n/g, " ");
-    }
-    const win = window.open(BRANCH_LINKS[branch], "_blank");
-    if (win) win.opener = null;
-  });
-
-  renderCart();
+  // Allow links like shop.html?item=0 (used by "Choose options" on the home page)
+  if (params.has("item")) openQuickView(+params.get("item"));
 
   // ===== STICKY NAV =====
   const topbar = $("topbar");
